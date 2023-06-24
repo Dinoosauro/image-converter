@@ -14,3 +14,10 @@ Then, look at the resizing options: you can resize the images by putting a perce
 Now you can choose the images to convert. You can convert directly the images you've in your clipboard (only if zip option is disabled), otherwise you can also choose the photos from a folder. At the end, the images or the zip file will be downloaded automatically, except if you've disabled the "Download the zip file immediately" option. In that case, you'll see a button called "Download zip". Click it and the zip file will be downloaded.
 
 Lastly, you can change between light (🤮) or dark (👍🏻) mode by clicking the sun/moon image at the top right of the page.
+
+## Privacy
+Everything is elaborated locally on your device. Nothing is sent to a server. The only things saved on your device are the settings, and they're saved in an isolated local storage that can be deleted at any time from the browser's settings.
+
+### Connected domains:
+- GitHub Pages: hosting of the webpage
+- Google Fonts: only for getting fonts and make the webpage a little decent-looking, no other data is sent or fetched from Google.
