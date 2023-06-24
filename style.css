@@ -1,0 +1,232 @@
+body {
+    color: rgb(240, 240, 240);
+    background-color: rgb(22, 22, 22);
+    font-family: 'Work Sans', sans-serif;
+    padding: 15px;
+    padding-top: 5px;
+}
+.lightbody {
+    color: rgb(22,22,22);
+    background-color: rgb(245,245,245); /* Not pure white */
+}
+.container {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin: 10px;
+    margin-bottom: 2px;
+    margin-top: 0px;
+}
+
+.tryCenter {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media only screen and (min-width: 720px) {
+    .maybeRight {
+        float: right;
+        width: 35%;
+    }
+
+    .maybeLeft {
+        float: left;
+        width: 100%;
+        margin-left: 0px;
+    }
+
+    .tryCenter {
+        display: flex;
+        float: left;
+        align-content: baseline;
+        justify-content: normal;
+        width: 65%;
+    }
+}
+
+@media only screen and (max-width: 720px) {
+    .maybeRight {
+        width: 100%;
+        float: left;
+    }
+
+    .maybeLeft {
+        float: left;
+        width: 100%;
+    }
+}
+
+.insideContainer {
+    background-color: rgb(51, 51, 51);
+    border-radius: 8px;
+    width: 90%;
+    padding: 25px;
+}
+.lightinside {
+    background-color: rgb(210,210,210);
+}
+h2 {
+    margin-top: 0px;
+}
+
+input {
+    margin-left: 15px;
+    width: 42%;
+    background-color: rgb(91, 91, 91);
+    color: rgb(240, 240, 240);
+    padding-left: 7px;
+    padding-right: 7px;
+}
+.inputlight {
+    background-color: rgb(220, 220, 220);
+    color: rgb(22,22,22);
+}
+
+input[type=checkbox] {
+    width: auto;
+}
+.inputrangelight {
+    accent-color: #3F51B5 !important
+}
+
+input[type=range] {
+    accent-color: #283593;
+}
+
+select {
+    height: 25px;
+    padding-left: 2px;
+    padding-right: 4px;
+    border-radius: 8px;
+    font-family: 'Work Sans', sans-serif;
+    background-color: rgb(91, 91, 91);
+    color: rgb(240, 240, 240);
+}
+.lightselect {
+    background-color: rgb(220,220,220);
+    color: rgb(22,22,22);
+}
+
+button {
+    background-color: rgb(91, 91, 91);
+    height: 50px;
+    width: 35%;
+    border-radius: 8px;
+    color: rgb(240, 240, 240);
+    margin-right: 25px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 0.9rem;
+    font-family: 'Work Sans', sans-serif;
+}
+.lightbtn {
+    background-color: rgb(170,170,170);
+    color: rgb(22,22,22);
+}
+
+a {
+    color: #2196F3
+}
+.lighta {
+    color: #0D47A1;
+}
+
+button:hover {
+    cursor: pointer;
+    background-color: rgb(110, 110, 110);
+}
+.lightbtn:hover {
+    background-color: rgb(185,185,185);
+}
+
+.accent {
+    background-color: #283593;
+    border-color: #283593;
+}
+.lightaccent {
+    background-color: #26A69A;
+    border-color: #26A69A;
+}
+
+.accent:hover {
+    background-color: #3949AB;
+}
+.lightaccent:hover {
+    background-color: #80CBC4;
+}
+progress {
+    width: 80%;
+    height: 15px;
+    border-radius: 8px;
+}
+
+.half {
+    width: 60%;
+    /* Just changed, it looks better */
+    height: 20px;
+    border-radius: 8px;
+}
+
+dialog {
+    background-color: rgb(80, 80, 80);
+    border-radius: 8px;
+    border-color: rgb(240, 240, 240);
+    color: rgb(240, 240, 240);
+    max-height: 80vh;
+    overflow-y: show;
+}
+.lightdialog {
+    background-color: rgb(210,210,210);
+    border-color: rgb(51,51,51);
+    color: rgb(22,22,22);
+}
+
+.link {
+    text-decoration: underline;
+}
+
+.link:hover {
+    cursor: pointer;
+}
+
+.buttonContainer {
+    height: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+dialog {
+    top: 50%;
+    bottom: 50%;
+    margin-left: 5%;
+    margin-right: 5%;
+    text-overflow: clip;
+}
+
+.dialogInternal {
+    height: 50vh;
+    max-height: 50vh;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+ .right {
+    margin-right: 25px;;
+ }
+ a:hover {
+    cursor: pointer;
+    color: #BBDEFB
+ }
+.lighta:hover {
+    color: #1976D2 !important;
+ }
+.modechange {
+    float: right
+}
+.modechange:hover {
+    cursor: pointer
+}
