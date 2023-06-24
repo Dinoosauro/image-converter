@@ -95,6 +95,7 @@ input[type=checkbox] {
 
 input[type=range] {
     accent-color: #283593;
+    padding: 0px;
 }
 
 select {
