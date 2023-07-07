@@ -1,13 +1,19 @@
+:root {
+    --text: rgb(22,22,22); /* rgb(240,240,240);*/
+    --background: rgb(245,245,245); /*rgb(22,22,22)*/
+    --card: rgb(210,210,210); /*rgb(51,51,51)*/
+    --input: rgb(220,220,220); /*91,91,91*/
+    --accent: #26A69A; /*283593*/
+}
 body {
-    color: rgb(240, 240, 240);
-    background-color: rgb(22, 22, 22);
+    color: var(--text);
+    background-color: var(--background);
     font-family: 'Work Sans', sans-serif;
     padding: 15px;
     padding-top: 5px;
 }
-.lightbody {
-    color: rgb(22,22,22);
-    background-color: rgb(245,245,245); /* Not pure white */
+h1,h2,h3,h4 {
+    font-family: 'Montserrat', 'Work Sans', sans-serif;
 }
 .container {
     padding: 15px;
@@ -61,13 +67,10 @@ body {
 }
 
 .insideContainer {
-    background-color: rgb(51, 51, 51);
+    background-color: var(--card);
     border-radius: 8px;
     width: 90%;
     padding: 25px;
-}
-.lightinside {
-    background-color: rgb(210,210,210);
 }
 h2 {
     margin-top: 0px;
@@ -76,25 +79,18 @@ h2 {
 input {
     margin-left: 15px;
     width: 42%;
-    background-color: rgb(91, 91, 91);
-    color: rgb(240, 240, 240);
+    background-color: var(--input);
+    color: var(--text);
     padding-left: 7px;
     padding-right: 7px;
-}
-.inputlight {
-    background-color: rgb(220, 220, 220);
-    color: rgb(22,22,22);
 }
 
 input[type=checkbox] {
     width: auto;
 }
-.inputrangelight {
-    accent-color: #3F51B5 !important
-}
 
 input[type=range] {
-    accent-color: #283593;
+    accent-color: var(--accent);
     padding: 0px;
 }
 
@@ -104,16 +100,13 @@ select {
     padding-right: 4px;
     border-radius: 8px;
     font-family: 'Work Sans', sans-serif;
-    background-color: rgb(91, 91, 91);
-    color: rgb(240, 240, 240);
-}
-.lightselect {
-    background-color: rgb(220,220,220);
-    color: rgb(22,22,22);
+    background-color: var(--input);
+    color: var(--text);
 }
 
 button {
-    background-color: rgb(91, 91, 91);
+    background-color: var(--input);
+    color: var(--text);
     height: 50px;
     width: 35%;
     border-radius: 8px;
@@ -123,41 +116,39 @@ button {
     padding-right: 8px;
     font-size: 0.9rem;
     font-family: 'Work Sans', sans-serif;
-}
-.lightbtn {
-    background-color: rgb(170,170,170);
-    color: rgb(22,22,22);
+    border: 2px var(--input) solid;
 }
 
 a {
-    color: #2196F3
+    color: var(--accent)
 }
-.lighta {
-    color: #0D47A1;
+@keyframes brightnessAnimation {
+    from {filter: brightness(100%); -webkit-filter: brightness(100%);}
+    to {filter: brightness(130%); -webkit-filter: brightness(130%);}
 }
-
+@keyframes brightnessAnimationBack {
+    from {filter: brightness(130%); -webkit-filter: brightness(130%);}
+    to {filter: brightness(100%); -webkit-filter: brightness(100%);}
+}
 button:hover {
     cursor: pointer;
-    background-color: rgb(110, 110, 110);
+    filter: brightness(80%);
 }
-.lightbtn:hover {
-    background-color: rgb(185,185,185);
+.hoverAnimate:hover {
+    animation-name: brightnessAnimation;
+    animation-duration: 0.3s;
+    animation-iteration-count: 1;
+    filter: brightness(130%);
 }
-
+.hoverAnimateBack {
+    animation-name: brightnessAnimationBack;
+    animation-duration: 0.35s;
+    animation-iteration-count: 1;
+    filter: brightness(100%);
+}
 .accent {
-    background-color: #283593;
-    border-color: #283593;
-}
-.lightaccent {
-    background-color: #26A69A;
-    border-color: #26A69A;
-}
-
-.accent:hover {
-    background-color: #3949AB;
-}
-.lightaccent:hover {
-    background-color: #80CBC4;
+    background-color: var(--accent);
+    border-color: var(--accent);
 }
 progress {
     width: 80%;
@@ -173,19 +164,16 @@ progress {
 }
 
 dialog {
-    background-color: rgb(80, 80, 80);
+    background-color: var(--card);
     border-radius: 8px;
-    border-color: rgb(240, 240, 240);
-    color: rgb(240, 240, 240);
+    border-color: var(--text);
+    color: var(--text);
     max-height: 80vh;
     overflow-y: show;
+    position: fixed;
+    opacity: 0;
+    transition: opacity 0.35s ease-in-out;
 }
-.lightdialog {
-    background-color: rgb(210,210,210);
-    border-color: rgb(51,51,51);
-    color: rgb(22,22,22);
-}
-
 .link {
     text-decoration: underline;
 }
@@ -199,6 +187,7 @@ dialog {
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--text)
 }
 
 dialog {
@@ -216,18 +205,21 @@ dialog {
     overflow-y: scroll;
 }
  .right {
-    margin-right: 25px;;
+    margin-right: 25px;
+    text-decoration: underline;
  }
  a:hover {
     cursor: pointer;
-    color: #BBDEFB
- }
-.lighta:hover {
-    color: #1976D2 !important;
+    filter: brightness(80%);
  }
 .modechange {
     float: right
 }
 .modechange:hover {
     cursor: pointer
+}
+.dialogColor {
+    width: 15%;
+    background-color: var(--background);
+    border-radius: 8px;
 }

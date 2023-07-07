@@ -2,10 +2,31 @@ let fileNameData = [];
 let imgDataConvert = [];
 let progression = 0;
 let localZip = [false, undefined];
+let localHeic = false;
+let finalExtension = [];
 let isDark = true;
 function startConvert() {
     if (progression < imgDataConvert.length) {
-        createImg(imgDataConvert[progression], fileNameData[progression]);
+        function getPng() {
+            fetch(imgDataConvert[progression]).then((res) => { res.blob().then((blob) => { heic2any({ blob }).then((img) => createImg(URL.createObjectURL(img), fileNameData[progression])) }) });
+        }
+        console.log(fileNameData);
+        if (finalExtension[progression].endsWith("heic") || finalExtension[progression].endsWith("heif")) {
+            if (!localHeic) {
+                let heicLoader = document.createElement("script");
+                heicLoader.src = "https://dinoosauro.github.io/image-converter/heic2any.js";
+                heicLoader.setAttribute("crossorigin", "anonymous");
+                heicLoader.onload = function () {
+                    localHeic = true;
+                    getPng();
+                }
+                document.body.append(heicLoader);
+            } else {
+                getPng();
+            }
+        } else {
+            createImg(imgDataConvert[progression], fileNameData[progression]);
+        }
     } else {
         fileNameData = [];
         imgDataConvert = [];
@@ -31,7 +52,7 @@ function dataURLtoFile(dataurl, filename) {
     return new File([u8arr], filename, { type: mime });
 }
 
-document.getElementById("zip").addEventListener("change", function() {
+document.getElementById("zip").addEventListener("change", function () {
     if (localZip[0] == false) {
         let JSZipLoader = document.createElement("script");
         JSZipLoader.src = "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
@@ -59,7 +80,7 @@ document.getElementById("zip").addEventListener("change", function() {
         document.getElementById("autoDiv").style.display = "none";
     }
 }, false);
-document.getElementById("autozip").addEventListener("change", function() {
+document.getElementById("autozip").addEventListener("change", function () {
     if (!document.getElementById("autozip").checked && document.getElementById("zip").checked) {
         document.getElementById("zipBtn").style.display = "inline";
         document.getElementById("addBtn").style.marginRight = "25px";
@@ -81,7 +102,7 @@ function createImg(imgLoad, name) {
     let generalImage = new Image();
     generalImage.onload = function () {
         let canvas = document.createElement("canvas");
-        let imageSize = []; 
+        let imageSize = [];
         switch (document.getElementById("resizePercentage").value) {
             case "width":
                 imageSize = [Math.floor(parseInt(document.getElementById("pixelNumber").value)), Math.floor(parseInt(document.getElementById("pixelNumber").value) * generalImage.height / generalImage.width)];
@@ -89,7 +110,7 @@ function createImg(imgLoad, name) {
             case "height":
                 imageSize = [Math.floor(parseInt(document.getElementById("pixelNumber").value) * generalImage.width / generalImage.height), Math.floor(parseInt(document.getElementById("pixelNumber").value))];
                 break;
-            default: 
+            default:
                 imageSize = [Math.floor(generalImage.width * document.getElementById("resizeRange").value), Math.floor(generalImage.height * document.getElementById("resizeRange").value)];
                 break;
         }
@@ -114,40 +135,58 @@ function createImg(imgLoad, name) {
             progression++;
             startConvert();
         } else {
+            console.log("here!")
             fetch(image).then(response => response.blob()).then(blob => {
+                console.log("Here2!");
                 dataDownload(blob, name);
                 progression++;
                 startConvert();
             });
         }
     }
-    generalImage.onerror = function() {
+    generalImage.onerror = function (e) {
         // Probably unsupported image, try with the next one
         progression++;
+        console.error(e);
         startConvert();
     }
     generalImage.src = imgLoad;
 }
+let linkStore = [[], []]; // [[File URL], [File Name]]
 function dataDownload(blob, name) {
     let url = window.URL.createObjectURL(blob);
+    console.warn(url);
     let a = document.createElement("a");
     a.href = url;
     a.download = name;
     a.click();
-    window.URL.revokeObjectURL(url);
+    let optionRecover = document.createElement("option");
+    optionRecover.textContent = name;
+    optionRecover.value = linkStore[0].length;
+    linkStore[0].push(url);
+    linkStore[1].push(name);
+    document.getElementById("itemSelect").append(optionRecover);
 }
-window.onresize = function(e) {
+document.getElementById("itemSelect").addEventListener("input", () => {
+    if (document.getElementById("itemSelect").value === "no") return;
+    document.getElementById("linkId").textContent = "Download file";
+    document.getElementById("linkId").download = linkStore[1][parseInt(document.getElementById("itemSelect").value)];
+    document.getElementById("linkId").href = linkStore[0][parseInt(document.getElementById("itemSelect").value)];
+})
+window.onresize = function (e) {
     if (window.innerWidth < 720) document.getElementById("hereLarge").append(document.getElementById("movableDiv")); else document.getElementById("hereSmall").append(document.getElementById("movableDiv"));
 }
-document.getElementById("quality").addEventListener("input", function() {
+document.getElementById("quality").addEventListener("input", function () {
     document.getElementById("qualityPercentage").textContent = Math.round(document.getElementById("quality").value * 100);
 }, false)
 document.getElementById("fileOpen").addEventListener("change", function () {
     document.getElementById("progresslabel").style.display = "inline";
     document.getElementById("progressfinish").style.display = "none";
+    console.log("HNFEIU")
     if (document.getElementById("fileOpen").files) {
-    document.getElementById("total").textContent = document.getElementById("fileOpen").files.length;
-    document.getElementById("progressbar").max = document.getElementById("fileOpen").files.length;
+        console.log("HEYEEEE");
+        document.getElementById("total").textContent = document.getElementById("fileOpen").files.length;
+        document.getElementById("progressbar").max = document.getElementById("fileOpen").files.length;
         let itemReadProgression = 0;
         function loadItems() {
             let item = document.getElementById("fileOpen").files[itemReadProgression];
@@ -155,10 +194,11 @@ document.getElementById("fileOpen").addEventListener("change", function () {
             fileRead.onload = function () {
                 if (item.type.indexOf("image/") == -1) {
                     document.getElementById("total").textContent = parseInt(document.getElementById("total").textContent) - 1;
-                    document.getElementById("progressbar").max = parseInt(doucment.getElementById("total").textContent) - 1;
+                    document.getElementById("progressbar").max = parseInt(document.getElementById("total").textContent) - 1;
                 } else {
-                imgDataConvert.push(fileRead.result);
-                fileNameData.push(`${item.name.substring(0, item.name.lastIndexOf("."))}.${document.getElementById("select").value}`);
+                    imgDataConvert.push(fileRead.result);
+                    finalExtension.push(item.name.substring(item.name.lastIndexOf(".") + 1));
+                    fileNameData.push(`${item.name.substring(0, item.name.lastIndexOf("."))}.${document.getElementById("select").value}`);
                 }
                 itemReadProgression++;
                 if (document.getElementById("fileOpen").files.length > itemReadProgression) loadItems(); else startConvert();
@@ -189,35 +229,35 @@ async function getClipboard() {
             document.getElementById("total").textContent = parseInt(document.getElementById("total").textContent) - 1;
             document.getElementById("progressbar").max = parseInt(document.getElementById("total").textContent) - 1;
             continue;
-        } 
+        }
         let blob = await item.getType(item.types[0]);
         imgDataConvert.push(URL.createObjectURL(blob));
         fileNameData.push(`clipboard.${document.getElementById("select").value}`);
     }
     startConvert();
 }
-document.getElementById("resizePercentage").addEventListener("change", function() {
+document.getElementById("resizePercentage").addEventListener("change", function () {
     let resizeItem = ["pixelNumber", "percentageDiv"];
     if (document.getElementById("resizePercentage").value == "percentage") resizeItem = [resizeItem[1], resizeItem[0]];
     document.getElementById(resizeItem[0]).style.display = "inline";
     document.getElementById(resizeItem[1]).style.display = "none";
 }, false);
-document.getElementById("resizeRange").oninput = function() {
+document.getElementById("resizeRange").oninput = function () {
     document.getElementById("percentageResizeText").textContent = Math.round(document.getElementById("resizeRange").value * 100);
 }
-document.getElementById("select").addEventListener("change", function() {
+document.getElementById("select").addEventListener("change", function () {
     if (document.getElementById("select").value == "png") document.getElementById("outputQualityDiv").style.display = "none"; else document.getElementById("outputQualityDiv").style.display = "inline";
 }, false);
 if (window.location.href.indexOf("fromedgeimg") !== -1) {
     document.getElementById("goBack").style.display = "inline";
     document.getElementById("introduction").style.display = "none";
-    document.getElementById("goBack").onclick = function() {
+    document.getElementById("goBack").onclick = function () {
         window.history.back();
     }
-} 
-let localItems = document.querySelectorAll(["[data-storage]"]); 
-for (let i = 0; i < localItems.length; i++) {    
-    localItems[i].addEventListener("change", function() {
+}
+let localItems = document.querySelectorAll(["[data-storage]"]);
+for (let i = 0; i < localItems.length; i++) {
+    localItems[i].addEventListener("change", function () {
         let value = "";
         switch (localItems[i].getAttribute("data-value")) {
             case "checkbox":
@@ -248,27 +288,75 @@ for (let i = 0; i < localItems.length; i++) {
     }
 }
 document.getElementById("qualityPercentage").textContent = Math.round(document.getElementById("quality").value * 100);
-if (localStorage.getItem("resizeRange") !== null) document.getElementById("percentageResizeText").textContent = Math.round(parseFloat(localStorage.getItem("resizeRange")) * 100);
+if (localStorage.getItem("imageconverter-resizeRange") !== null) document.getElementById("percentageResizeText").textContent = Math.round(parseFloat(localStorage.getItem("imageconverter-resizeRange")) * 100);
 if (document.getElementById("clipBtn").style.display !== "none") document.getElementById("addBtn").style.marginRight = "25px";
 if (navigator.userAgent.toLowerCase().indexOf("safari") !== -1 && navigator.userAgent.toLowerCase().indexOf("chrome") === -1) document.getElementById("select").removeChild(document.getElementById("webp"));
 function dialogManager(id, close) {
-    if (close) document.getElementById(id).close(); else document.getElementById(id).show();
+    if (close) {
+        document.getElementById(id).style.opacity = 0;
+        setTimeout(() => {document.getElementById(id).close();}, 400); 
+    } else {
+        document.getElementById(id).show();
+        document.getElementById(id).style.opacity = 1;
+    }
 }
-let lightContainer = [["body", "input", "input[type=range]", "select", "button", ".accent", "dialog", ".insideContainer"], ["lightbody", "inputlight", "inputrangelight", "lightselect", "lightbtn", "lightaccent", "lightdialog", "lightinside"]];
-let imgBase64 = ["data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM3LjkwMjYgMzMuMDA5M0MzMi45MzIgNDEuNjE4NSAyMS45MjM0IDQ0LjU2ODMgMTMuMzE0MSAzOS41OTc3QzEwLjk2OTYgMzguMjQ0MSA4Ljk5NTg3IDM2LjQxMjkgNy40OTI2IDM0LjIzQzYuOTkgMzMuNTAwMSA3LjMxNTExIDMyLjQ5MjIgOC4xNDk0NCAzMi4xOTM2QzE0LjkyOTggMjkuNzY2OCAxOC41NjEyIDI2Ljk1NDYgMjAuNjY4NSAyMi45MzJDMjIuODg3IDE4LjY5NzMgMjMuNDYwMyAxNC4wNTg2IDIxLjkwODMgNy43MDAxOUMyMS42OTM3IDYuODIwOTYgMjIuMzg4MiA1Ljk4MzggMjMuMjkyIDYuMDMyMjhDMjYuMDk0MSA2LjE4MjYyIDI4LjgzMTYgNi45ODc1MyAzMS4zMTQxIDguNDIwODJDMzkuOTIzNCAxMy4zOTE0IDQyLjg3MzEgMjQuNCAzNy45MDI2IDMzLjAwOTNaTTIyLjg4MyAyNC4wOTIyQzIwLjU3OTggMjguNDg4OCAxNi43NzA4IDMxLjUyMyAxMC40NTY2IDMzLjk5ODlDMTEuNjA3MyAzNS4zNjUgMTIuOTkxMSAzNi41MjQ1IDE0LjU2NDEgMzcuNDMyN0MyMS45Nzc3IDQxLjcxMjkgMzEuNDU3MyAzOS4xNzI4IDM1LjczNzUgMzEuNzU5M0M0MC4wMTc3IDI0LjM0NTcgMzcuNDc3NiAxNC44NjYxIDMwLjA2NDEgMTAuNTg1OUMyOC41MjY3IDkuNjk4MjUgMjYuODcxOSA5LjA4NzM4IDI1LjE1NzUgOC43Njc1OUwyNC42ODg1IDguNjg3NkMyNS44ODE4IDE0LjY1NTMgMjUuMjggMTkuNTE2NyAyMi44ODMgMjQuMDkyMloiIGZpbGw9IiNkZGRkZGQiLz4KPC9zdmc+", "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIzLjk5OSA0LjAwMDk4QzI0LjY4OTMgNC4wMDA5OCAyNS4yNDkgNC41NjA2MiAyNS4yNDkgNS4yNTA5OFY3Ljc1MDk4QzI1LjI0OSA4LjQ0MTMzIDI0LjY4OTMgOS4wMDA5OCAyMy45OTkgOS4wMDA5OEMyMy4zMDg2IDkuMDAwOTggMjIuNzQ5IDguNDQxMzMgMjIuNzQ5IDcuNzUwOThWNS4yNTA5OEMyMi43NDkgNC41NjA2MiAyMy4zMDg2IDQuMDAwOTggMjMuOTk5IDQuMDAwOThaTTI0LjA0NjYgMzQuMDIxOEMyOS41NTU4IDM0LjAyMTggMzQuMDIxOSAyOS41NTU3IDM0LjAyMTkgMjQuMDQ2NUMzNC4wMjE5IDE4LjUzNzMgMjkuNTU1OCAxNC4wNzEyIDI0LjA0NjYgMTQuMDcxMkMxOC41MzczIDE0LjA3MTIgMTQuMDcxMiAxOC41MzczIDE0LjA3MTIgMjQuMDQ2NUMxNC4wNzEyIDI5LjU1NTcgMTguNTM3MyAzNC4wMjE4IDI0LjA0NjYgMzQuMDIxOFpNMjQuMDQ2NiAzMS41MjE4QzE5LjkxODEgMzEuNTIxOCAxNi41NzEyIDI4LjE3NSAxNi41NzEyIDI0LjA0NjVDMTYuNTcxMiAxOS45MTggMTkuOTE4MSAxNi41NzEyIDI0LjA0NjYgMTYuNTcxMkMyOC4xNzUxIDE2LjU3MTIgMzEuNTIxOSAxOS45MTggMzEuNTIxOSAyNC4wNDY1QzMxLjUyMTkgMjguMTc1IDI4LjE3NTEgMzEuNTIxOCAyNC4wNDY2IDMxLjUyMThaTTQyLjc1IDI1LjI1MDJDNDMuNDQwMyAyNS4yNTAyIDQ0IDI0LjY5MDYgNDQgMjQuMDAwMkM0NCAyMy4zMDk5IDQzLjQ0MDMgMjIuNzUwMiA0Mi43NSAyMi43NTAySDQwLjI1QzM5LjU1OTYgMjIuNzUwMiAzOSAyMy4zMDk5IDM5IDI0LjAwMDJDMzkgMjQuNjkwNiAzOS41NTk2IDI1LjI1MDIgNDAuMjUgMjUuMjUwMkg0Mi43NVpNMjMuOTk5IDM5LjAwMDVDMjQuNjg5MyAzOS4wMDA1IDI1LjI0OSAzOS41NjAyIDI1LjI0OSA0MC4yNTA1VjQyLjc1MDJDMjUuMjQ5IDQzLjQ0MDYgMjQuNjg5MyA0NC4wMDAyIDIzLjk5OSA0NC4wMDAyQzIzLjMwODYgNDQuMDAwMiAyMi43NDkgNDMuNDQwNiAyMi43NDkgNDIuNzUwMlY0MC4yNTA1QzIyLjc0OSAzOS41NjAyIDIzLjMwODYgMzkuMDAwNSAyMy45OTkgMzkuMDAwNVpNNy43NDk5NSAyNS4yNTAyQzguNDQwMyAyNS4yNTAyIDguOTk5OTUgMjQuNjkwNiA4Ljk5OTk1IDI0LjAwMDJDOC45OTk5NSAyMy4zMDk5IDguNDQwMyAyMi43NTAyIDcuNzQ5OTUgMjIuNzUwMkg1LjI0OTUxQzQuNTU5MTYgMjIuNzUwMiAzLjk5OTUxIDIzLjMwOTkgMy45OTk1MSAyNC4wMDAyQzMuOTk5NTEgMjQuNjkwNiA0LjU1OTE2IDI1LjI1MDIgNS4yNDk1MSAyNS4yNTAySDcuNzQ5OTVaTTkuMzY2MDcgOS4zNjY0N0M5Ljg1NDIyIDguODc4MzIgMTAuNjQ1NyA4Ljg3ODMyIDExLjEzMzggOS4zNjY0N0wxMy42MzM4IDExLjg2NjVDMTQuMTIyIDEyLjM1NDYgMTQuMTIyIDEzLjE0NjEgMTMuNjMzOCAxMy42MzQyQzEzLjE0NTcgMTQuMTIyNCAxMi4zNTQyIDE0LjEyMjQgMTEuODY2MSAxMy42MzQyTDkuMzY2MDcgMTEuMTM0MkM4Ljg3NzkxIDEwLjY0NjEgOC44Nzc5MSA5Ljg1NDYzIDkuMzY2MDcgOS4zNjY0N1pNMTEuMTMzOCAzOC42MzQ3QzEwLjY0NTcgMzkuMTIyOSA5Ljg1NDIyIDM5LjEyMjkgOS4zNjYwNyAzOC42MzQ3QzguODc3OTEgMzguMTQ2NiA4Ljg3NzkxIDM3LjM1NTEgOS4zNjYwNyAzNi44NjdMMTEuODY2MSAzNC4zNjdDMTIuMzU0MiAzMy44Nzg4IDEzLjE0NTcgMzMuODc4OCAxMy42MzM4IDM0LjM2N0MxNC4xMjIgMzQuODU1MSAxNC4xMjIgMzUuNjQ2NiAxMy42MzM4IDM2LjEzNDdMMTEuMTMzOCAzOC42MzQ3Wk0zOC42MzQ4IDkuMzY2NDdDMzguMTQ2NyA4Ljg3ODMyIDM3LjM1NTIgOC44NzgzMiAzNi44NjcgOS4zNjY0N0wzNC4zNjcgMTEuODY2NUMzMy44Nzg5IDEyLjM1NDYgMzMuODc4OSAxMy4xNDYxIDM0LjM2NyAxMy42MzQyQzM0Ljg1NTIgMTQuMTIyNCAzNS42NDY3IDE0LjEyMjQgMzYuMTM0OCAxMy42MzQyTDM4LjYzNDggMTEuMTM0MkMzOS4xMjMgMTAuNjQ2MSAzOS4xMjMgOS44NTQ2MyAzOC42MzQ4IDkuMzY2NDdaTTM2Ljg2NyAzOC42MzQ3QzM3LjM1NTIgMzkuMTIyOSAzOC4xNDY3IDM5LjEyMjkgMzguNjM0OCAzOC42MzQ3QzM5LjEyMyAzOC4xNDY2IDM5LjEyMyAzNy4zNTUxIDM4LjYzNDggMzYuODY3TDM2LjEzNDggMzQuMzY3QzM1LjY0NjcgMzMuODc4OCAzNC44NTUyIDMzLjg3ODggMzQuMzY3IDM0LjM2N0MzMy44Nzg5IDM0Ljg1NTEgMzMuODc4OSAzNS42NDY2IDM0LjM2NyAzNi4xMzQ3TDM2Ljg2NyAzOC42MzQ3WiIgZmlsbD0iIzE2MTYxNiIvPgo8L3N2Zz4K"];
-function lightSwitch(badDecision) {
-        for (let i = 0; i < lightContainer[0].length; i++) {
-            let documentFetch = document.querySelectorAll(lightContainer[0][i]);
-            console.log(documentFetch);
-            for (let x = 0; x < documentFetch.length; x++) {
-                if (badDecision) documentFetch[x].classList.add(lightContainer[1][i]); else documentFetch[x].classList.remove(lightContainer[1][i]);
-            }
-        }
-        isDark = !badDecision;
-        document.getElementById("theme").src = imgBase64[badDecision == true ? 1 : 0];
-        localStorage.setItem("theme", isDark);
+let defaultThemeList = {
+    theme: [{
+        text: "#edeeed",
+        background: "#151515",
+        card: "#292929",
+        input: "#474747",
+        accent: "#865e5e"
+    }, {
+        text: "#161616",
+        background: "#f5f5f5",
+        card: "#d2d2d2",
+        input: "#dcdcdc",
+        accent: "#58b88d"
+    }, {
+        text: "#fcf7f2",
+        background: "#282a36",
+        card: "#44475A",
+        input: "#787b90",
+        accent: "#5ea8b8"
+    }]
 }
-document.getElementById("theme").onclick = function() {
-    lightSwitch(isDark);
+if (localStorage.getItem("imageconverter-theme") === null) localStorage.setItem("imageconverter-theme", JSON.stringify(defaultThemeList.theme[0]));
+function changeTheme() {
+    let JSONTheme = JSON.parse(localStorage.getItem("imageconverter-theme"));
+    console.log(JSONTheme)
+    for (let i = 0; i < Object.keys(JSONTheme).length; i++) {
+        document.querySelector(`[data-change=${Object.keys(JSONTheme)[i]}]`).value = JSONTheme[Object.keys(JSONTheme)[i]];
+        document.querySelector(`[data-change=${Object.keys(JSONTheme)[i]}]`).dispatchEvent(new Event("input", {}))
+    }
 }
-if (localStorage.getItem("theme") !== null) lightSwitch(localStorage.getItem("theme") === 'false'); else lightSwitch(false);
+function hexToRgbNew(hex) { // Borrowed from https://stackoverflow.com/a/11508164
+    var arrBuff = new ArrayBuffer(4);
+    var vw = new DataView(arrBuff);
+    vw.setUint32(0, parseInt(hex, 16), false);
+    var arrByte = new Uint8Array(arrBuff);
+    return arrByte[1] + "," + arrByte[2] + "," + arrByte[3];
+}
+document.querySelector("[data-change=accent]").addEventListener("input", () => {
+    let rgbOption = hexToRgbNew(document.querySelector("[data-change=accent]").value.replace("#", "")).split(",");
+    document.getElementById("theme").src = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='100%' stroke-miterlimit='10' viewBox='0 0 24 24' width='100%' fill-rule='nonzero' stroke-linecap='round' stroke-linejoin='round' xmlns:v='https://vecta.io/nano'><path d='M3.839 5.858c2.941-3.916 9.03-5.055 13.364-2.36 4.28 2.661 5.854 7.777 4.101 12.577-1.655 4.533-6.016 6.328-9.16 4.048-1.177-.854-1.634-1.925-1.854-3.664l-.105-.988-.045-.397c-.123-.934-.311-1.352-.704-1.572-.536-.299-.892-.306-1.595-.033l-.351.146-.179.078c-1.014.44-1.688.595-2.541.416l-.2-.047-.164-.047c-2.789-.864-3.202-4.647-.565-8.158zm.984 6.716l.123.036.134.031c.439.087.814.014 1.437-.242l.602-.257c1.202-.493 1.985-.541 3.045.05.918.511 1.275 1.298 1.458 2.66l.053.459.054.532.047.422c.172 1.361.485 2.09 1.248 2.644 2.275 1.65 5.534.308 6.87-3.349 1.516-4.152.174-8.515-3.484-10.789-3.674-2.284-8.898-1.307-11.372 1.987-2.075 2.762-1.82 5.28-.215 5.816zm11.225-1.994a1.25 1.25 0 0 1 2.415-.647 1.25 1.25 0 0 1-2.415.647zm.495 3.489a1.25 1.25 0 1 1 2.415-.647 1.25 1.25 0 1 1-2.415.647zm-2.473-6.491a1.25 1.25 0 0 1 2.415-.647 1.25 1.25 0 0 1-2.415.647zm-.029 8.998a1.25 1.25 0 1 1 2.415-.647 1.25 1.25 0 1 1-2.415.647zm-3.497-9.97a1.25 1.25 0 1 1 2.415-.647 1.25 1.25 0 1 1-2.415.647z' fill='rgb(${rgbOption[0]},${rgbOption[1]},${rgbOption[2]})'/></svg>`
+})
+for (let item of document.querySelectorAll("[data-change]")) {
+    item.addEventListener("input", () => {
+        document.documentElement.style.setProperty(`--${item.getAttribute("data-change")}`, item.value);
+        let JSONParse = JSON.parse(localStorage.getItem("imageconverter-theme"));
+        JSONParse[item.getAttribute("data-change")] = item.value;
+        localStorage.setItem("imageconverter-theme", JSON.stringify(JSONParse));
+    });
+}
+changeTheme();
+for (let item of document.getElementsByClassName("hoverAnimate")) item.addEventListener("mouseleave", () => {
+    item.classList.add("hoverAnimateBack");
+    setTimeout(() => {
+        item.classList.remove("hoverAnimateBack");
+    }, 350);
+})
+document.getElementById("themeSelect").addEventListener("input", () => {
+    localStorage.setItem("imageconverter-theme", JSON.stringify(defaultThemeList.theme[parseInt(document.getElementById("themeSelect").value)]));
+    changeTheme();
+})
