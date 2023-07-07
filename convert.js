@@ -5,7 +5,6 @@ if ('serviceWorker' in navigator) {
     };
     registerServiceWorker();
 }
-// Save for caching / offline use
 fetch("./heic2any.js").then((res) => res.text().then((text) => {localHeic[2] = text; localHeic[0] = true;}));
 
 let fileNameData = [];
@@ -18,7 +17,7 @@ let isDark = true;
 function startConvert() {
     if (progression < imgDataConvert.length) {
         function getPng() {
-            fetch(imgDataConvert[progression]).then((res) => { res.blob().then((blob) => { heic2any({ blob }).then((img) => createImg(URL.createObjectURL(img), fileNameData[progression])) }) });
+            fetch(imgDataConvert[progression]).then((res) => { res.blob().then((blob) => { heic2any({ blob }).then((img) => createImg(URL.createObjectURL(img), fileNameData[progression])).catch((e) => {if (e.code === 1) createImg(imgDataConvert[progression], fileNameData[progression])}) }) });
         }
         console.log(finalExtension[progression]);
         if (finalExtension[progression].endsWith("heic") || finalExtension[progression].endsWith("heif")) {
@@ -42,6 +41,7 @@ function startConvert() {
     } else {
         fileNameData = [];
         imgDataConvert = [];
+        finalExtension = [];
         progression = 0;
         document.getElementById("progressbar").value = 1;
         document.getElementById("progressbar").max = 1;
@@ -370,3 +370,10 @@ document.getElementById("themeSelect").addEventListener("input", () => {
     changeTheme();
 })
 if (window.location.href.indexOf("themeoptions") !== -1) document.getElementById("theme").click();
+let installationPrompt;
+window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    installationPrompt = event;
+});
+document.getElementById("appInstall").addEventListener("click", () => {installationPrompt.prompt();});
+
