@@ -10,7 +10,6 @@ function startConvert() {
         function getPng() {
             fetch(imgDataConvert[progression]).then((res) => { res.blob().then((blob) => { heic2any({ blob }).then((img) => createImg(URL.createObjectURL(img), fileNameData[progression])) }) });
         }
-        console.log(fileNameData);
         if (finalExtension[progression].endsWith("heic") || finalExtension[progression].endsWith("heif")) {
             if (!localHeic) {
                 let heicLoader = document.createElement("script");
@@ -135,9 +134,7 @@ function createImg(imgLoad, name) {
             progression++;
             startConvert();
         } else {
-            console.log("here!")
             fetch(image).then(response => response.blob()).then(blob => {
-                console.log("Here2!");
                 dataDownload(blob, name);
                 progression++;
                 startConvert();
@@ -182,9 +179,7 @@ document.getElementById("quality").addEventListener("input", function () {
 document.getElementById("fileOpen").addEventListener("change", function () {
     document.getElementById("progresslabel").style.display = "inline";
     document.getElementById("progressfinish").style.display = "none";
-    console.log("HNFEIU")
     if (document.getElementById("fileOpen").files) {
-        console.log("HEYEEEE");
         document.getElementById("total").textContent = document.getElementById("fileOpen").files.length;
         document.getElementById("progressbar").max = document.getElementById("fileOpen").files.length;
         let itemReadProgression = 0;
@@ -324,7 +319,6 @@ let defaultThemeList = {
 if (localStorage.getItem("imageconverter-theme") === null) localStorage.setItem("imageconverter-theme", JSON.stringify(defaultThemeList.theme[0]));
 function changeTheme() {
     let JSONTheme = JSON.parse(localStorage.getItem("imageconverter-theme"));
-    console.log(JSONTheme)
     for (let i = 0; i < Object.keys(JSONTheme).length; i++) {
         document.querySelector(`[data-change=${Object.keys(JSONTheme)[i]}]`).value = JSONTheme[Object.keys(JSONTheme)[i]];
         document.querySelector(`[data-change=${Object.keys(JSONTheme)[i]}]`).dispatchEvent(new Event("input", {}))
