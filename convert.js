@@ -1,8 +1,18 @@
+if ('serviceWorker' in navigator) {
+    let registration;
+    const registerServiceWorker = async () => {
+        registration = await navigator.serviceWorker.register('./service-worker.js', {scope: 'https://dinoosauro.github.io/image-converter/'});
+    };
+    registerServiceWorker();
+}
+// Save for caching / offline use
+fetch("./heic2any.js").then((res) => res.text().then((text) => {localHeic[2] = text; localHeic[0] = true;}));
+
 let fileNameData = [];
 let imgDataConvert = [];
 let progression = 0;
 let localZip = [false, undefined];
-let localHeic = false;
+let localHeic = [false, false, ""];
 let finalExtension = [];
 let isDark = true;
 function startConvert() {
@@ -10,16 +20,19 @@ function startConvert() {
         function getPng() {
             fetch(imgDataConvert[progression]).then((res) => { res.blob().then((blob) => { heic2any({ blob }).then((img) => createImg(URL.createObjectURL(img), fileNameData[progression])) }) });
         }
+        console.log(finalExtension[progression]);
         if (finalExtension[progression].endsWith("heic") || finalExtension[progression].endsWith("heif")) {
-            if (!localHeic) {
+            if (!localHeic[1] && localHeic[0]) {
                 let heicLoader = document.createElement("script");
-                heicLoader.src = "https://dinoosauro.github.io/image-converter/heic2any.js";
+                heicLoader.src = URL.createObjectURL(new Blob([localHeic[2]]), {type: "text/plain"});
                 heicLoader.setAttribute("crossorigin", "anonymous");
                 heicLoader.onload = function () {
-                    localHeic = true;
+                    localHeic[1] = true;
                     getPng();
                 }
                 document.body.append(heicLoader);
+            } else if (!localHeic[0] && !localHeic[1]) {
+                setTimeout(() => {startConvert()}, 500);
             } else {
                 getPng();
             }
@@ -163,6 +176,7 @@ function dataDownload(blob, name) {
     linkStore[0].push(url);
     linkStore[1].push(name);
     document.getElementById("itemSelect").append(optionRecover);
+    document.getElementById("noOption").disabled = true;
 }
 document.getElementById("itemSelect").addEventListener("input", () => {
     if (document.getElementById("itemSelect").value === "no") return;
@@ -333,7 +347,8 @@ function hexToRgbNew(hex) { // Borrowed from https://stackoverflow.com/a/1150816
 }
 document.querySelector("[data-change=accent]").addEventListener("input", () => {
     let rgbOption = hexToRgbNew(document.querySelector("[data-change=accent]").value.replace("#", "")).split(",");
-    document.getElementById("theme").src = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='100%' stroke-miterlimit='10' viewBox='0 0 24 24' width='100%' fill-rule='nonzero' stroke-linecap='round' stroke-linejoin='round' xmlns:v='https://vecta.io/nano'><path d='M3.839 5.858c2.941-3.916 9.03-5.055 13.364-2.36 4.28 2.661 5.854 7.777 4.101 12.577-1.655 4.533-6.016 6.328-9.16 4.048-1.177-.854-1.634-1.925-1.854-3.664l-.105-.988-.045-.397c-.123-.934-.311-1.352-.704-1.572-.536-.299-.892-.306-1.595-.033l-.351.146-.179.078c-1.014.44-1.688.595-2.541.416l-.2-.047-.164-.047c-2.789-.864-3.202-4.647-.565-8.158zm.984 6.716l.123.036.134.031c.439.087.814.014 1.437-.242l.602-.257c1.202-.493 1.985-.541 3.045.05.918.511 1.275 1.298 1.458 2.66l.053.459.054.532.047.422c.172 1.361.485 2.09 1.248 2.644 2.275 1.65 5.534.308 6.87-3.349 1.516-4.152.174-8.515-3.484-10.789-3.674-2.284-8.898-1.307-11.372 1.987-2.075 2.762-1.82 5.28-.215 5.816zm11.225-1.994a1.25 1.25 0 0 1 2.415-.647 1.25 1.25 0 0 1-2.415.647zm.495 3.489a1.25 1.25 0 1 1 2.415-.647 1.25 1.25 0 1 1-2.415.647zm-2.473-6.491a1.25 1.25 0 0 1 2.415-.647 1.25 1.25 0 0 1-2.415.647zm-.029 8.998a1.25 1.25 0 1 1 2.415-.647 1.25 1.25 0 1 1-2.415.647zm-3.497-9.97a1.25 1.25 0 1 1 2.415-.647 1.25 1.25 0 1 1-2.415.647z' fill='rgb(${rgbOption[0]},${rgbOption[1]},${rgbOption[2]})'/></svg>`
+    document.getElementById("theme").src = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='100%' stroke-miterlimit='10' viewBox='0 0 24 24' width='100%' fill-rule='nonzero' stroke-linecap='round' stroke-linejoin='round' xmlns:v='https://vecta.io/nano'><path d='M3.839 5.858c2.941-3.916 9.03-5.055 13.364-2.36 4.28 2.661 5.854 7.777 4.101 12.577-1.655 4.533-6.016 6.328-9.16 4.048-1.177-.854-1.634-1.925-1.854-3.664l-.105-.988-.045-.397c-.123-.934-.311-1.352-.704-1.572-.536-.299-.892-.306-1.595-.033l-.351.146-.179.078c-1.014.44-1.688.595-2.541.416l-.2-.047-.164-.047c-2.789-.864-3.202-4.647-.565-8.158zm.984 6.716l.123.036.134.031c.439.087.814.014 1.437-.242l.602-.257c1.202-.493 1.985-.541 3.045.05.918.511 1.275 1.298 1.458 2.66l.053.459.054.532.047.422c.172 1.361.485 2.09 1.248 2.644 2.275 1.65 5.534.308 6.87-3.349 1.516-4.152.174-8.515-3.484-10.789-3.674-2.284-8.898-1.307-11.372 1.987-2.075 2.762-1.82 5.28-.215 5.816zm11.225-1.994a1.25 1.25 0 0 1 2.415-.647 1.25 1.25 0 0 1-2.415.647zm.495 3.489a1.25 1.25 0 1 1 2.415-.647 1.25 1.25 0 1 1-2.415.647zm-2.473-6.491a1.25 1.25 0 0 1 2.415-.647 1.25 1.25 0 0 1-2.415.647zm-.029 8.998a1.25 1.25 0 1 1 2.415-.647 1.25 1.25 0 1 1-2.415.647zm-3.497-9.97a1.25 1.25 0 1 1 2.415-.647 1.25 1.25 0 1 1-2.415.647z' fill='rgb(${rgbOption[0]},${rgbOption[1]},${rgbOption[2]})'/></svg>`;
+    document.getElementById("icon").src = `data:image/svg+xml;utf8,<svg width='28' height='28' viewBox='0 0 28 28' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M3 6.75C3 4.67893 4.67893 3 6.75 3H21.25C23.3211 3 25 4.67893 25 6.75V21.25C25 23.3211 23.3211 25 21.25 25H6.75C4.67893 25 3 23.3211 3 21.25V6.75ZM6.75 4.5C5.50736 4.5 4.5 5.50736 4.5 6.75V21.25C4.5 21.611 4.58501 21.9521 4.73612 22.2545L12.6019 14.5674C13.3791 13.8079 14.6205 13.8079 15.3977 14.5674L23.2638 22.2547C23.4149 21.9523 23.5 21.6111 23.5 21.25V6.75C23.5 5.50736 22.4926 4.5 21.25 4.5H6.75ZM22.1845 23.2974L14.3493 15.6402C14.155 15.4503 13.8446 15.4503 13.6503 15.6402L5.81524 23.2972C6.09993 23.4274 6.41649 23.5 6.75 23.5H21.25C21.5834 23.5 21.8999 23.4275 22.1845 23.2974ZM18.5 11C17.9477 11 17.5 10.5523 17.5 10C17.5 9.44772 17.9477 9 18.5 9C19.0523 9 19.5 9.44772 19.5 10C19.5 10.5523 19.0523 11 18.5 11ZM18.5 12.5C19.8807 12.5 21 11.3807 21 10C21 8.61929 19.8807 7.5 18.5 7.5C17.1193 7.5 16 8.61929 16 10C16 11.3807 17.1193 12.5 18.5 12.5Z' fill='rgb(${rgbOption[0]},${rgbOption[1]},${rgbOption[2]})'/></svg>`
 })
 for (let item of document.querySelectorAll("[data-change]")) {
     item.addEventListener("input", () => {
@@ -354,3 +369,4 @@ document.getElementById("themeSelect").addEventListener("input", () => {
     localStorage.setItem("imageconverter-theme", JSON.stringify(defaultThemeList.theme[parseInt(document.getElementById("themeSelect").value)]));
     changeTheme();
 })
+if (window.location.href.indexOf("themeoptions") !== -1) document.getElementById("theme").click();

@@ -4,8 +4,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Work+Sans&display=swap" rel="stylesheet">
-    <link href="https://dinoosauro.github.io/image-converter/style.css" rel="stylesheet">
+    <link href="./style.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="apple-touch-icon" href="./icon.png" />
+    <meta name="apple-mobile-web-app-status-bar" content="#151515" />
+    <meta name="theme-color" content="#865e5e" />
     <style>
 
     </style>
@@ -14,7 +18,13 @@
 <body>
     <img class="modechange hoverAnimate" width="32px" height="32px" id="theme" onclick="dialogManager('themeDialog', false)">
     <div id="introduction">
-        <h1>image-converter</h1><i>Convert and compress images saved on your device or from your clipboard.</i><br><br>
+        <div style="display: flex; height: 48px; justify-content: center">
+            <img id="icon" width="54px" height="54px">
+            <div style="display: flex; align-items: center; margin-left: 15px;">
+                <h1 style="margin-bottom: 0px; padding-bottom: 0px; padding-top: 0px; margin-top: 4px;">image-converter</h1>
+            </div>
+        </div>    <br><br>
+        <i>Convert and compress images saved on your device or from your clipboard.</i><br><br>
     </div>
     <button id="goBack" class="hoverAnimate" style="display: none;">Back to previous step</button>
     <div class="tryCenter">
@@ -84,7 +94,7 @@
     <div class="container">
         <div class="insideContainer">
             <h2>Progress:</h2>
-            <progress value="0" max="1" id="progressbar"></progress><br><br>
+            <div><progress value="0" max="1" id="progressbar"></progress></div><br><br>
             <l id="progresslabel">Converted <span id="current">0</span> images of <span id="total">0</span> total</l>
             <l id="progressfinish" style="display: none;">Finished converting!</l>
         </div>
@@ -93,7 +103,7 @@
         <div class="insideContainer">
             <h2>Download items:</h2>
             <l>If you accidentally canceled a download, or your browser blocked it (especially on some mobile browsers), you can recover it by choosing it from this Select</l><br><br>
-            <select id="itemSelect" class="hoverAnimate" style="width: 100%;"><option value="no">Select a file</option></select><br><br><a id="linkId"></a>
+            <select id="itemSelect" class="hoverAnimate" style="width: 100%;"><option value="no" id="noOption">Select a file</option></select><br><br><a id="linkId"></a>
         </div>
     </div>
     <form id="reset"><input type="file" id="fileOpen" style="display: none;" multiple></form>
@@ -163,5 +173,5 @@
     <l>image-converter<br><br><a class="right hoverAnimate" href="https://github.com/Dinoosauro/image-converter">View on GitHub</a><a
             class="right hoverAnimate" onclick="dialogManager('opensource', false)">Open Source Licenses</a><a
             onclick="dialogManager('privacydialog', false)" class="hoverAnimate" style="text-decoration: underline;">Privacy</a></l>
-    <script src="https://dinoosauro.github.io/image-converter/convert.js"></script>
+    <script src="./convert.js"></script>
 </body>

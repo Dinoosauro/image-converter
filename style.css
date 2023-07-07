@@ -1,9 +1,9 @@
 :root {
-    --text: rgb(22,22,22); /* rgb(240,240,240);*/
-    --background: rgb(245,245,245); /*rgb(22,22,22)*/
-    --card: rgb(210,210,210); /*rgb(51,51,51)*/
-    --input: rgb(220,220,220); /*91,91,91*/
-    --accent: #26A69A; /*283593*/
+    --text: rgb(22,22,22); 
+    --background: rgb(245,245,245); 
+    --card: rgb(210,210,210);
+    --input: rgb(220,220,220);
+    --accent: #26A69A;
 }
 body {
     color: var(--text);
@@ -155,10 +155,33 @@ progress {
     height: 15px;
     border-radius: 8px;
 }
-
+::placeholder { 
+    color: var(--text);
+    opacity: 1;
+  }
+  progress {
+    border-radius: 8px;
+  }
+  progress::-webkit-progress-bar {
+    border-radius: 8px;
+  }
+  progress::-webkit-progress-value {
+    border-radius: 8px;
+  }
+  progress::-moz-progress-bar {
+    border-radius: 8px;
+  }
+  progress::-moz-progress-bar {
+    background: var(--accent);
+  }
+  progress::-webkit-progress-value {
+    background: var(--accent);
+  }
+  progress {
+    color: var(--accent);
+  }
 .half {
     width: 60%;
-    /* Just changed, it looks better */
     height: 20px;
     border-radius: 8px;
 }
