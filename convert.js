@@ -19,7 +19,6 @@ function startConvert() {
         function getPng() {
             fetch(imgDataConvert[progression]).then((res) => { res.blob().then((blob) => { heic2any({ blob }).then((img) => createImg(URL.createObjectURL(img), fileNameData[progression])).catch((e) => {if (e.code === 1) createImg(imgDataConvert[progression], fileNameData[progression])}) }) });
         }
-        console.log(finalExtension[progression]);
         if (finalExtension[progression].endsWith("heic") || finalExtension[progression].endsWith("heif")) {
             if (!localHeic[1] && localHeic[0]) {
                 let heicLoader = document.createElement("script");
@@ -165,7 +164,6 @@ function createImg(imgLoad, name) {
 let linkStore = [[], []]; // [[File URL], [File Name]]
 function dataDownload(blob, name) {
     let url = window.URL.createObjectURL(blob);
-    console.warn(url);
     let a = document.createElement("a");
     a.href = url;
     a.download = name;
@@ -234,14 +232,19 @@ async function getClipboard() {
     document.getElementById("total").textContent = clipboard.length;
     document.getElementById("progressbar").max = clipboard.length;
     for (let item of clipboard) {
-        if (item.types[0].indexOf("image/") == -1) {
+        let isImage = [];
+        for (let i = 0; i < item.types.length; i++) if (item.types[i].indexOf("image/") !== -1) isImage.push(i);
+        if (isImage.length === 0) {
             document.getElementById("total").textContent = parseInt(document.getElementById("total").textContent) - 1;
             document.getElementById("progressbar").max = parseInt(document.getElementById("total").textContent) - 1;
             continue;
         }
-        let blob = await item.getType(item.types[0]);
+        for (let i = 0; i < isImage.length; i++) {
+        let blob = await item.getType(item.types[isImage[i]]);
         imgDataConvert.push(URL.createObjectURL(blob));
+        finalExtension.push(item.types[isImage[i]].substring(item.types[isImage[i]].indexOf("/") + 1));
         fileNameData.push(`clipboard.${document.getElementById("select").value}`);
+        }
     }
     startConvert();
 }
