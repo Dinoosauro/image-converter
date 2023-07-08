@@ -7,7 +7,7 @@ if ('serviceWorker' in navigator) {
 }
 fetch("./heic2any.js").then((res) => res.text().then((text) => {localHeic[2] = text; localHeic[0] = true;}));
 let appVersion = "1.1.1";
-fetch("https://dinoosauro.github.io/UpdateVersion/imgconvert-updatecode").then((res) => res.text().then((text) => {if (text.replace("\n", "") !== appVersion) if (confirm(`There's a new version of image-converter. Do you want to update? [${appVersion} --> ${text.replace("\n", "")}]`)) caches.keys().then((names) => {for (let item in names) {caches.delete(item); location.reload(true);}})}).catch((e) => {console.error(e)})).catch((e) => console.error(e));
+fetch("https://dinoosauro.github.io/UpdateVersion/imgconvert-updatecode", {cache: "no-store"}).then((res) => res.text().then((text) => {if (text.replace("\n", "") !== appVersion) if (confirm(`There's a new version of image-converter. Do you want to update? [${appVersion} --> ${text.replace("\n", "")}]`)) caches.keys().then((names) => {for (let item in names) {caches.delete(item); location.reload(true);}})}).catch((e) => {console.error(e)})).catch((e) => console.error(e));
 let fileNameData = [];
 let imgDataConvert = [];
 let progression = 0;
