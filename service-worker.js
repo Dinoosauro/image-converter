@@ -6,6 +6,7 @@ const filestoCache = [
     `./heic2any.js`,
     `./manifest.json`,
     `./style.css`,
+    `./icon.png`,
     'https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Work+Sans&display=swap',
     `https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js`,
 ];
@@ -18,15 +19,15 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => self.clients.claim());
 self.addEventListener('fetch', event => {
     const req = event.request;
-    event.respondWith(networkFirst(req));
+    if (req.url.indexOf("updatecode") !== -1) return fetch(req); else event.respondWith(networkFirst(req));
 });
 
 async function networkFirst(req) {
     try {
         const networkResponse = await fetch(req);
-        const cache = await caches.open('imageconverter-cache');
-        await cache.delete(req);
-        await cache.put(req, networkResponse.clone());
+            const cache = await caches.open('imageconverter-cache');
+            await cache.delete(req);
+            await cache.put(req, networkResponse.clone());
         return networkResponse;
     } catch (error) {
         const cachedResponse = await caches.match(req);
