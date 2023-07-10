@@ -68,7 +68,7 @@ function startConvert() {
                     getPng();
                 }
                 break;
-            case "tiff":
+            case "tiff": case "tif":
                 if (!localTiff) {
                     getOptionalLibraries("https://cdn.jsdelivr.net/npm/utif@3.1.0/UTIF.min.js").then(() => {
                         localTiff = true;
