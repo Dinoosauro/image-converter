@@ -16,8 +16,10 @@ Now you can choose the images to convert. You can convert directly the images yo
 
 Lastly, you can change themes: click the icon on the top of the page and you'll be able to select three themes (Light, Dark, Dracula). If you want, you can create your own one by changing the color from the inputs below the selector.
 
-## HEIC support
-Even if most browsers don't support HEIC/HEIF photos, image-converter uses the open-source library [heic2any](https://github.com/alexcorvi/heic2any) to decode HEIC photos.
+## HEIC and TIFF support
+Even if most browsers don't support HEIC/HEIF photos, image-converter uses the open-source library [heic2any](https://github.com/alexcorvi/heic2any) to decode HEIC photos. 
+
+Meanwhile, for TIFF images, we use the [utif.js](https://github.com/photopea/UTIF.js) library to decode them.
 
 ## Privacy
 Everything is elaborated locally on your device. Nothing is sent to a server. The only things saved on your device are the settings, and they're saved in an isolated local storage that can be deleted at any time from the browser's settings.
