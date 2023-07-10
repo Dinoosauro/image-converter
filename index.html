@@ -151,46 +151,13 @@
     <dialog id="opensource">
         <h2>Open source things:</h2>
         <div class="dialogInternal">
-            <h3>Website License:</h3> This website is distributed with the MIT license. A copy of it can be found below
-            here.<br><br>MIT License<br><br>Copyright (c) 2023 Dinoosauro<br><br>Permission is hereby granted, free of
-            charge, to any person obtaining a copy<br>of this software and associated documentation files (the
-            "Software"), to deal<br>in the Software without restriction, including without limitation the rights<br>to
-            use, copy, modify, merge, publish, distribute, sublicense, and/or sell<br>copies of the Software, and to
-            permit persons to whom the Software is<br>furnished to do so, subject to the following
-            conditions:<br><br>The above copyright notice and this permission notice shall be included in all<br>copies
-            or substantial portions of the Software.<br>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-            EXPRESS OR<br>IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,<br>FITNESS FOR A
-            PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE<br>AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
-            ANY CLAIM, DAMAGES OR OTHER<br>LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-            FROM,<br>OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-            THE<br>SOFTWARE.<br><br><br>
-            <h3>Open source software:</h3>To compress ZIP files, we use the <a
-                href="https://github.com/Stuk/jszip">JSZip library</a>, published under the MIT license, reported
-            below.<br>Copyright (c) 2009-2016 Stuart Knightley, David Duponchel, Franz Buchinger, António
-            Afonso<br><br>Permission is hereby granted, free of charge, to any person obtaining a copy of this software
-            and associated documentation files (the "Software"), to deal in the Software without restriction, including
-            without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-            copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
-            following conditions:<br><br>The above copyright notice and this permission notice shall be included in all
-            copies or substantial portions of the Software.<br><br>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
-            ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-            PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-            CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-            OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.<br><br><br>We also use the
-            <a href="https://github.com/alexcorvi/heic2any">heic2any library</a> to decode HEIC pictures. Its license is
-            reported below<br><br> MIT License<br><br>Copyright (c) 2020 Alex Corvi<br><br>Permission is hereby granted,
-            free of charge, to any person obtaining a copy of this software and associated documentation files (the
-            "Software"), to deal in the Software without restriction, including without limitation the rights to use,
-            copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-            persons to whom the Software is furnished to do so, subject to the following conditions:<br><br>The above
-            copyright notice and this permission notice shall be included in all copies or substantial portions of the
-            Software.<br><br>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-            INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-            NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-            OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-            WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.<br><br><br>Finally, the website icon is
-            provided by <a href="https://github.com/microsoft/fluentui-system-icons/tree/main">Microsoft's Fluent Design
-                Icons</a>
+            <l>Click on a name to see their license.</l>
+            <div style="display: flex; overflow-x: auto;">
+                <a class="right hoverAnimate" data-license="2023 Dinoosauro">image-converter</a><a class="right hoverAnimate" data-license="2009-2016 Stuart Knightley, David Duponchel, Franz Buchinger, António Afonso">JSZip</a><a class="right hoverAnimate" data-license="2020 Alex Corvi">heic2any</a><a class="right hoverAnimate" data-license="2017 Photopea">UTIF.js</a><a class="right hoverAnimate" id="iconText">Icons</a>
+            </div><br><br>
+            <div style="padding: 10px; border-radius: 8px; backdrop-filter: brightness(80%); -webkit-backdrop-filter: brightness(80%);">
+                <l id="licenseLabel"></l>
+            </div>
         </div>
         <button class="accent hoverAnimate" onclick="dialogManager('opensource', true)">Got it</button>
     </dialog>

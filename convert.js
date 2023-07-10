@@ -5,38 +5,82 @@ if ('serviceWorker' in navigator) {
     };
     registerServiceWorker();
 }
-fetch("./heic2any.js").then((res) => res.text().then((text) => {localHeic[2] = text; localHeic[0] = true;}));
-let appVersion = "1.1.1";
-fetch("https://dinoosauro.github.io/UpdateVersion/imgconvert-updatecode", {cache: "no-store"}).then((res) => res.text().then((text) => {if (text.replace("\n", "") !== appVersion) if (confirm(`There's a new version of image-converter. Do you want to update? [${appVersion} --> ${text.replace("\n", "")}]`)) caches.keys().then((names) => {for (let item in names) {caches.delete(item); location.reload(true);}})}).catch((e) => {console.error(e)})).catch((e) => console.error(e));
+fetch("./heic2any.js").then((res) => res.text().then((text) => { localHeic[2] = text; localHeic[0] = true; }));
+let appVersion = "1.1.2";
+fetch("https://dinoosauro.github.io/UpdateVersion/imgconvert-updatecode", { cache: "no-store" }).then((res) => res.text().then((text) => { if (text.replace("\n", "") !== appVersion) if (confirm(`There's a new version of image-converter. Do you want to update? [${appVersion} --> ${text.replace("\n", "")}]`)) caches.keys().then((names) => { for (let item in names) { caches.delete(item); location.reload(true); } }) }).catch((e) => { console.error(e) })).catch((e) => console.error(e));
 let fileNameData = [];
 let imgDataConvert = [];
 let progression = 0;
 let localZip = [false, undefined];
 let localHeic = [false, false, ""];
+let localTiff = false;
 let finalExtension = [];
 let isDark = true;
+function getOptionalLibraries(url) {
+    return new Promise((resolve, reject) => {
+        let contentLoader = document.createElement("script");
+        contentLoader.src = url
+        contentLoader.setAttribute("crossorigin", "anonymous");
+        contentLoader.onload = function () {
+            resolve("");
+        }
+        document.body.append(contentLoader);
+    });
+}
 function startConvert() {
     if (progression < imgDataConvert.length) {
         function getPng() {
-            fetch(imgDataConvert[progression]).then((res) => { res.blob().then((blob) => { heic2any({ blob }).then((img) => createImg(URL.createObjectURL(img), fileNameData[progression])).catch((e) => {if (e.code === 1) createImg(imgDataConvert[progression], fileNameData[progression])}) }) });
+            fetch(imgDataConvert[progression]).then((res) => { res.blob().then((blob) => { heic2any({ blob }).then((img) => createImg(URL.createObjectURL(img), fileNameData[progression])).catch((e) => { if (e.code === 1) createImg(imgDataConvert[progression], fileNameData[progression]) }) }) });
         }
-        if (finalExtension[progression].endsWith("heic") || finalExtension[progression].endsWith("heif")) {
-            if (!localHeic[1] && localHeic[0]) {
-                let heicLoader = document.createElement("script");
-                heicLoader.src = URL.createObjectURL(new Blob([localHeic[2]]), {type: "text/plain"});
-                heicLoader.setAttribute("crossorigin", "anonymous");
-                heicLoader.onload = function () {
-                    localHeic[1] = true;
+        function getTiff() {
+            new Blob([imgDataConvert[progression]]).arrayBuffer().then((buffer) => {
+                const base64 = imgDataConvert[progression].split(",")[1];
+                const binary = atob(base64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                let img = bytes.buffer;
+                var ifds = UTIF.decode(img);
+                UTIF.decodeImage(img, ifds[0])
+                var rgba = UTIF.toRGBA8(ifds[0]);
+                // Not the most efficient thing, since two canvases will be created for a single image. Maybe in the future I will rewrite the main canvas function to be more "decentralized" so that it can accesed by here.
+                var canvas = document.createElement("canvas");
+                canvas.width = ifds[0].width;
+                canvas.height = ifds[0].height;
+                var ctx = canvas.getContext("2d");
+                var imgData = ctx.createImageData(canvas.width, canvas.height);
+                imgData.data.set(rgba);
+                ctx.putImageData(imgData, 0, 0);
+                createImg(canvas.toDataURL("image/png"), fileNameData[progression]);
+            })
+        }
+        switch (finalExtension[progression].substring(finalExtension[progression].lastIndexOf(".") + 1)) {
+            case "heic": case "heif":
+                if (!localHeic[1] && localHeic[0]) {
+                    getOptionalLibraries(URL.createObjectURL(new Blob([localHeic[2]]), { type: "text/plain" })).then(() => {
+                        localHeic[1] = true;
+                        getPng();
+                    })
+                } else if (!localHeic[0] && !localHeic[1]) {
+                    setTimeout(() => { startConvert() }, 500);
+                } else {
                     getPng();
                 }
-                document.body.append(heicLoader);
-            } else if (!localHeic[0] && !localHeic[1]) {
-                setTimeout(() => {startConvert()}, 500);
-            } else {
-                getPng();
-            }
-        } else {
-            createImg(imgDataConvert[progression], fileNameData[progression]);
+                break;
+            case "tiff":
+                if (!localTiff) {
+                    getOptionalLibraries("https://cdn.jsdelivr.net/npm/utif@3.1.0/UTIF.min.js").then(() => {
+                        localTiff = true;
+                        getTiff();
+                    })
+                } else {
+                    getTiff();
+                }
+                break;
+            default:
+                createImg(imgDataConvert[progression], fileNameData[progression]);
+                break;
         }
     } else {
         fileNameData = [];
@@ -241,10 +285,10 @@ async function getClipboard() {
             continue;
         }
         for (let i = 0; i < isImage.length; i++) {
-        let blob = await item.getType(item.types[isImage[i]]);
-        imgDataConvert.push(URL.createObjectURL(blob));
-        finalExtension.push(item.types[isImage[i]].substring(item.types[isImage[i]].indexOf("/") + 1));
-        fileNameData.push(`clipboard.${document.getElementById("select").value}`);
+            let blob = await item.getType(item.types[isImage[i]]);
+            imgDataConvert.push(URL.createObjectURL(blob));
+            finalExtension.push(item.types[isImage[i]].substring(item.types[isImage[i]].indexOf("/") + 1));
+            fileNameData.push(`clipboard.${document.getElementById("select").value}`);
         }
     }
     startConvert();
@@ -307,7 +351,7 @@ if (navigator.userAgent.toLowerCase().indexOf("safari") !== -1 && navigator.user
 function dialogManager(id, close) {
     if (close) {
         document.getElementById(id).style.opacity = 0;
-        setTimeout(() => {document.getElementById(id).close();}, 400); 
+        setTimeout(() => { document.getElementById(id).close(); }, 400);
     } else {
         document.getElementById(id).show();
         document.getElementById(id).style.opacity = 1;
@@ -379,5 +423,19 @@ window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
     installationPrompt = event;
 });
-document.getElementById("appInstall").addEventListener("click", () => {installationPrompt.prompt();});
-
+document.getElementById("appInstall").addEventListener("click", () => { installationPrompt.prompt(); });
+for (let item of document.querySelectorAll("[data-license]")) item.addEventListener("click", () => {
+    document.getElementById("licenseLabel").innerHTML = `Copyright (c) ${item.getAttribute("data-license")}<br><br>Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+    and associated documentation files (the "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+    following conditions:<br><br>The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.<br><br>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+    ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+    PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
+    OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.`
+})
+document.getElementById("iconText").addEventListener("click", () => {
+    document.getElementById("licenseLabel").innerHTML = "Icons are provided by Microsoft's Fluent UI Icons.";
+})

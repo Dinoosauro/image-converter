@@ -9,6 +9,7 @@ const filestoCache = [
     `./icon.png`,
     'https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Work+Sans&display=swap',
     `https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js`,
+    `https://cdn.jsdelivr.net/npm/utif@3.1.0/UTIF.min.js`,
 ];
 self.addEventListener('install', e => {
     e.waitUntil(
