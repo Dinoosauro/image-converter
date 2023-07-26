@@ -1,68 +1,77 @@
 :root {
-    --text: rgb(22,22,22); 
-    --background: rgb(245,245,245); 
-    --card: rgb(210,210,210);
-    --input: rgb(220,220,220);
+    --text: rgb(22, 22, 22);
+    --background: rgb(245, 245, 245);
+    --card: rgb(210, 210, 210);
+    --input: rgb(220, 220, 220);
     --accent: #26A69A;
 }
+
 body {
     color: var(--text);
     background-color: var(--background);
     font-family: 'Work Sans', sans-serif;
-    padding: 15px;
+    padding: 2vw;
     padding-top: 5px;
 }
-h1,h2,h3,h4 {
-    font-family: 'Montserrat', 'Work Sans', sans-serif;
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: 'Josefin Sans', 'Work Sans', sans-serif;
 }
-.container {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.selectBtn {
+    background-color: var(--card);
+    border-radius: 10px;
+    height: 5vh;
+    margin-right: 5px;
+}
+.textcenter {
+    color: var(--text);
+    display: block;
     text-align: center;
-    margin: 10px;
-    margin-bottom: 2px;
-    margin-top: 0px;
 }
 
-.tryCenter {
-    width: 100%;
+.container {
+    background-color: var(--card);
+    padding: 3vw;
+    border-radius: 8px;
+    width: 40vw;
+    margin-bottom: 25px;
+}
+
+.leftCard {
+    margin-right: 1vw;
+}
+
+.rightCard {
+    margin-left: 1vw;
+}
+.fill {
+    width: -webkit-fill-available !important;
+    width: -moz-available !important;
+    margin-left: 0px;
+  }
+.flexAdaptive {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-wrap: wrap;
 }
 
-@media only screen and (min-width: 720px) {
-    .maybeRight {
-        float: right;
-        width: 35%;
+@media only screen and (max-width: 799px) {
+    .flexAdaptive {
+        display: block;
     }
 
-    .maybeLeft {
-        float: left;
-        width: 100%;
+    .container {
+        width: 94%;
+    }
+
+    .leftCard {
+        margin-right: 0px;
+    }
+
+    .rightCard {
         margin-left: 0px;
-    }
-
-    .tryCenter {
-        display: flex;
-        float: left;
-        align-content: baseline;
-        justify-content: normal;
-        width: 65%;
-    }
-}
-
-@media only screen and (max-width: 720px) {
-    .maybeRight {
-        width: 100%;
-        float: left;
-    }
-
-    .maybeLeft {
-        float: left;
-        width: 100%;
     }
 }
 
@@ -72,6 +81,7 @@ h1,h2,h3,h4 {
     width: 90%;
     padding: 25px;
 }
+
 h2 {
     margin-top: 0px;
 }
@@ -87,11 +97,6 @@ input {
 
 input[type=checkbox] {
     width: auto;
-}
-
-input[type=range] {
-    accent-color: var(--accent);
-    padding: 0px;
 }
 
 select {
@@ -122,64 +127,94 @@ button {
 a {
     color: var(--accent)
 }
+
 @keyframes brightnessAnimation {
-    from {filter: brightness(100%); -webkit-filter: brightness(100%);}
-    to {filter: brightness(130%); -webkit-filter: brightness(130%);}
+    from {
+        filter: brightness(100%);
+        -webkit-filter: brightness(100%);
+    }
+
+    to {
+        filter: brightness(130%);
+        -webkit-filter: brightness(130%);
+    }
 }
+
 @keyframes brightnessAnimationBack {
-    from {filter: brightness(130%); -webkit-filter: brightness(130%);}
-    to {filter: brightness(100%); -webkit-filter: brightness(100%);}
+    from {
+        filter: brightness(130%);
+        -webkit-filter: brightness(130%);
+    }
+
+    to {
+        filter: brightness(100%);
+        -webkit-filter: brightness(100%);
+    }
 }
+
 button:hover {
     cursor: pointer;
     filter: brightness(80%);
 }
+
 .hoverAnimate:hover {
     animation-name: brightnessAnimation;
     animation-duration: 0.3s;
     animation-iteration-count: 1;
     filter: brightness(130%);
 }
+
 .hoverAnimateBack {
     animation-name: brightnessAnimationBack;
     animation-duration: 0.35s;
     animation-iteration-count: 1;
     filter: brightness(100%);
 }
-.accent {
+
+.accent, .btnSelected, .licenseSelected {
     background-color: var(--accent);
     border-color: var(--accent);
 }
+
 progress {
     width: 80%;
     height: 15px;
     border-radius: 8px;
 }
-::placeholder { 
+
+::placeholder {
     color: var(--text);
     opacity: 1;
-  }
-  progress {
+}
+
+progress {
     border-radius: 8px;
-  }
-  progress::-webkit-progress-bar {
+}
+
+progress::-webkit-progress-bar {
     border-radius: 8px;
-  }
-  progress::-webkit-progress-value {
+}
+
+progress::-webkit-progress-value {
     border-radius: 8px;
-  }
-  progress::-moz-progress-bar {
+}
+
+progress::-moz-progress-bar {
     border-radius: 8px;
-  }
-  progress::-moz-progress-bar {
+}
+
+progress::-moz-progress-bar {
     background: var(--accent);
-  }
-  progress::-webkit-progress-value {
+}
+
+progress::-webkit-progress-value {
     background: var(--accent);
-  }
-  progress {
+}
+
+progress {
     color: var(--accent);
-  }
+}
+
 .half {
     width: 60%;
     height: 20px;
@@ -197,6 +232,7 @@ dialog {
     opacity: 0;
     transition: opacity 0.35s ease-in-out;
 }
+
 .link {
     text-decoration: underline;
 }
@@ -227,22 +263,101 @@ dialog {
     overflow: hidden;
     overflow-y: scroll;
 }
- .right {
+
+.right {
     margin-right: 25px;
     text-decoration: underline;
- }
- a:hover {
+}
+
+a:hover {
     cursor: pointer;
     filter: brightness(80%);
- }
+}
+
 .modechange {
     float: right
 }
+
 .modechange:hover {
     cursor: pointer
 }
+
 .dialogColor {
     width: 15%;
     background-color: var(--background);
     border-radius: 8px;
 }
+/* Borrowed from W3Schools /*
+/* The switch - the box around the slider */
+.switch {
+    margin-left: 15px;
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 20px;
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input[type=checkbox] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--background);
+    padding-bottom: 5px;
+    padding-top: 5px;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 8px !important;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 6px;
+    bottom: 4px;
+    background-color: var(--text);
+    -webkit-transition: .4s;
+    border-radius: 8px;
+    transition: .4s;
+  }
+  
+  input[type=range] {
+    accent-color: var(--accent);
+    padding: 0px;
+  }
+  
+  input[type=checkbox]:checked+.slider {
+    background-color: var(--input);
+  }
+  
+  input[type=checkbox]:focus+.slider {
+    box-shadow: 0 0 1px var(--input);
+  }
+  
+  input[type=checkbox]:checked+.slider:before {
+    -webkit-transform: translateX(38px);
+    -ms-transform: translateX(38px);
+    transform: translateX(38px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+  

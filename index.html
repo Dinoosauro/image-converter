@@ -3,7 +3,7 @@
 <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Work+Sans&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@700&family=Work+Sans&display=swap"
         rel="stylesheet">
     <link href="./style.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
@@ -30,39 +30,31 @@
         <i>Convert and compress images saved on your device or from your clipboard.</i><br><br>
     </div>
     <button id="goBack" class="hoverAnimate" style="display: none;">Back to previous step</button>
-    <div class="tryCenter">
-        <div class="container maybeLeft">
+    <div class="flexAdaptive">
+        <div class="container leftCard">
             <div class="insideContainer">
                 <h2>Options:</h2>
-                <l>Choose the output file format:</l>
-                <select id="select" data-storage="imageconverter-format" class="hoverAnimate" data-value="index">
-                    <option value="jpg">JPEG</option>
-                    <option value="png">PNG</option>
-                    <option value="webp" id="webp">WebP</option>
-                </select><br><br>
-                <div id="outputQualityDiv">
-                    <l>Choose the output file quality. (<span id="qualityPercentage">90</span>%)</l><input
-                        class="hoverAnimate" type="range" min="0" max="1" step="0.01" value="0.9" id="quality"
+                <l>Choose the output file format:</l><br><br>
+                <div style="border-radius: 8px; background-color: var(--input); display: flex; padding: 5px;">
+                    <button class="selectBtn hoverAnimate btnSelected" data-select="jpg">JPEG</button>
+                    <button class="selectBtn hoverAnimate" data-select="png">PNG</button>
+                    <button class="selectBtn hoverAnimate" data-select="webp">WebP</button>
+                </div><br><br>
+                <div id="outputQualityDiv" class="textcenter">
+                    <l>Choose the output file quality. (<span id="qualityPercentage">90</span>%)</l><br><br><input
+                        class="hoverAnimate fill" type="range" min="0" max="1" step="0.01" value="0.9" id="quality"
                         data-storage="imageconverter-quality" data-value="value"><br>
                     <i style="font-size: 0.8rem;">More quality generates better images, while less quality generates
                         smaller (in
                         terms of storage) files</i><br><br>
                 </div>
-                <input type="checkbox" id="zip" class="hoverAnimate" data-storage="imageconverter-isZip"
-                    data-value="checkbox">
-                <l>Put all data in a .zip file</l><br>
-                <div id="autoDiv" style="display: none;"><input class="hoverAnimate" type="checkbox" id="autozip"
-                        data-storage="imageconverter-zipAutoDownload" data-value="checkbox" checked>
-                    <l>Download the zip file immediately</l>
-                </div><br>
+                
             </div>
         </div>
-    </div>
-
-    <div id="hereSmall"></div>
-    <div class="container">
+    <div class="container rightCard">
         <div class="insideContainer">
-            <h2>Resize images:</h2>
+            <h2>Settings:</h2>
+            <h3>Resize image:</h3>
             <l>Resize in </l> <select id="resizePercentage" class="hoverAnimate" data-value="index"
                 data-storage="imageconverter-resizeSelect">
                 <option value="percentage">Percentages</option>
@@ -70,43 +62,56 @@
                 <option value="width">Pixel for the width</option>
             </select><br><br>
             <div id="percentageDiv">
-                <input type="range" class="half hoverAnimate" value="1" min="0.01" max="1" step="0.01" id="resizeRange"
+                <input type="range" class="half hoverAnimate fill" value="1" min="0.01" max="1" step="0.01" id="resizeRange"
                     data-storage="imageconverter-resizeRange" data-value="value">
                 <br>
-                <l><span id="percentageResizeText">100</span>%</l>
+                <l class="textcenter"><span id="percentageResizeText">100</span>%</l>
             </div>
             <input type="number" id="pixelNumber" data-storage="imageconverter-resizeValue" data-value="value"
-                class="half hoverAnimate" placeholder="Write a number (in pixels)" style="display: none;"><br><br>
+                class="half hoverAnimate fill" placeholder="Write a number (in pixels)" style="display: none;"><br>
+                <h3>Output settings:</h3>
+                <label class="switch hoverAnimate">
+                    <input type="checkbox" id="zip" data-storage="imageconverter-isZip"
+                data-value="checkbox">
+                    <span class="slider"></span>
+                </label>
+            <l>Put all data in a .zip file</l><br><br>
+            <div id="autoDiv" style="display: none;">
+                <label class="switch hoverAnimate">
+                    <input type="checkbox" id="autozip"
+                    data-storage="imageconverter-zipAutoDownload" data-value="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+                
+                <l>Download the zip file immediately</l>
+            </div><br>
         </div>
     </div>
-    <div class="tryCenter" id="movableDiv">
-        <div class="container maybeLeft">
+        <div class="container leftCard">
             <div class="insideContainer">
                 <h2>Start conversion:</h2>
                 <div style="display: flex; justify-content: center;">
-                    <button onclick="getFiles()" id="addBtn" class="accent hoverAnimate">
+                    <button onclick="getFiles()" id="addBtn" class="accent hoverAnimate" style="width: 100%;">
                         <div class="buttonContainer">Select file</div>
-                    </button><button style="margin-right: 0px;" class="hoverAnimate" onclick="getClipboard()"
+                    </button><button style="margin-right: 0px; width: 100%;" class="hoverAnimate" onclick="getClipboard()"
                         id="clipBtn">
                         <div class="buttonContainer">Copy from clipboard</div>
-                    </button><button style="margin-right: 0px; display: none;" class="hoverAnimate"
+                    </button><button style="margin-right: 0px; display: none; width: 100%;" class="hoverAnimate"
                         onclick="downloadZip()" id="zipBtn">
                         <div class="buttonContainer">Download zip</div>
                     </button>
                 </div>
-            </div>
         </div>
     </div>
-    <div id="hereLarge"></div>
-    <div class="container">
+    <div class="container rightCard">
         <div class="insideContainer">
             <h2>Progress:</h2>
-            <div><progress value="0" max="1" id="progressbar"></progress></div><br><br>
-            <l id="progresslabel">Converted <span id="current">0</span> images of <span id="total">0</span> total</l>
-            <l id="progressfinish" style="display: none;">Finished converting!</l>
+            <div><progress value="0" max="1" id="progressbar" class="fill"></progress></div><br><br>
+            <l id="progresslabel" class="textcenter">Converted <span id="current">0</span> images of <span id="total">0</span> total</l>
+            <l id="progressfinish" style="display: none;" class="textcenter">Finished converting!</l>
         </div>
     </div>
-    <div class="container">
+    <div class="container fill" style="margin-right: 5px;">
         <div class="insideContainer">
             <h2>Download items:</h2>
             <l>If you accidentally canceled a download, or your browser blocked it (especially on some mobile browsers),
@@ -116,6 +121,8 @@
             </select><br><br><a id="linkId"></a>
         </div>
     </div>
+</div>
+
     <form id="reset"><input type="file" id="fileOpen" style="display: none;" multiple></form>
     <dialog id="themeDialog">
         <h2>Application theme</h2><br><br>
@@ -141,7 +148,7 @@
         <div class="dialogInternal">We don't send any of your images to external servers. All the image transcoding is
             done on your device. You can see the <a href="https://github.com/Dinoosauro/image-converter">source code
                 from our GitHub page</a> if you want to be sure.<br><br>Hosting is provided by GitHub Pages. To make
-            this page decent-looking, a font (Work Sans) is downloaded from Google Fonts' server. No data is shared with
+            this page decent-looking, some fonts (Work Sans & Josefin Sans) is downloaded from Google Fonts' server and, to add additional codecs, external libraries are downloaded from JSDelivr. No data is shared with
             them.<br><br>image-converter saves on your device only the settings, and you can delete them at any time
             from your browser's settings.</l><br><br></div>
         <button class="accent hoverAnimate" onclick="dialogManager('privacydialog', true)">
@@ -152,8 +159,12 @@
         <h2>Open source things:</h2>
         <div class="dialogInternal">
             <l>Click on a name to see their license.</l>
-            <div style="display: flex; overflow-x: auto;">
-                <a class="right hoverAnimate" data-license="2023 Dinoosauro">image-converter</a><a class="right hoverAnimate" data-license="2009-2016 Stuart Knightley, David Duponchel, Franz Buchinger, António Afonso">JSZip</a><a class="right hoverAnimate" data-license="2020 Alex Corvi">heic2any</a><a class="right hoverAnimate" data-license="2017 Photopea">UTIF.js</a><a class="right hoverAnimate" id="iconText">Icons</a>
+                <div style="border-radius: 8px; background-color: var(--input); display: flex; padding: 5px; overflow-x: auto;">
+                    <button class="selectBtn hoverAnimate licenseSelected" data-license="2023 Dinoosauro">image-converter</button>
+                    <button class="selectBtn hoverAnimate" data-license="2009-2016 Stuart Knightley, David Duponchel, Franz Buchinger, António Afonso">JSZip</button>
+                    <button class="selectBtn hoverAnimate" data-license="2020 Alex Corvi">heic2any</button>
+                    <button class="selectBtn hoverAnimate" data-license="2017 Photopea">UTIF.js</button>
+                    <button class="selectBtn hoverAnimate" id="iconText">Icons</button>
             </div><br><br>
             <div style="padding: 10px; border-radius: 8px; backdrop-filter: brightness(80%); -webkit-backdrop-filter: brightness(80%);">
                 <l id="licenseLabel"></l>

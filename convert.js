@@ -6,8 +6,8 @@ if ('serviceWorker' in navigator) {
     registerServiceWorker();
 }
 fetch("./heic2any.js").then((res) => res.text().then((text) => { localHeic[2] = text; localHeic[0] = true; }));
-let appVersion = "1.1.2";
-fetch("https://dinoosauro.github.io/UpdateVersion/imgconvert-updatecode", { cache: "no-store" }).then((res) => res.text().then((text) => { if (text.replace("\n", "") !== appVersion) if (confirm(`There's a new version of image-converter. Do you want to update? [${appVersion} --> ${text.replace("\n", "")}]`)) caches.keys().then((names) => { for (let item in names) { caches.delete(item); location.reload(true); } }) }).catch((e) => { console.error(e) })).catch((e) => console.error(e));
+let appVersion = "1.1.3";
+fetch("https://dinoosauro.github.io/UpdateVersion/imgconvert-updatecode", { cache: "no-store" }).then((res) => res.text().then((text) => { if (text.replace("\n", "") !== appVersion) if (confirm(`There's a new version of image-converter. Do you want to update? [${appVersion} --> ${text.replace("\n", "")}]`)) { caches.delete("imageconverter-cache"); location.reload(true); } }).catch((e) => { console.error(e) })).catch((e) => console.error(e));
 let fileNameData = [];
 let imgDataConvert = [];
 let progression = 0;
@@ -175,7 +175,7 @@ function createImg(imgLoad, name) {
         let context = canvas.getContext("2d");
         context.drawImage(generalImage, 0, 0, imageSize[0], imageSize[1]);
         let image;
-        switch (document.getElementById("select").value) {
+        switch (document.querySelector(".btnSelected").getAttribute("data-select")) {
             case "jpg":
                 image = canvas.toDataURL("image/jpeg", document.getElementById("quality").value);
                 break;
@@ -227,9 +227,6 @@ document.getElementById("itemSelect").addEventListener("input", () => {
     document.getElementById("linkId").download = linkStore[1][parseInt(document.getElementById("itemSelect").value)];
     document.getElementById("linkId").href = linkStore[0][parseInt(document.getElementById("itemSelect").value)];
 })
-window.onresize = function (e) {
-    if (window.innerWidth < 720) document.getElementById("hereLarge").append(document.getElementById("movableDiv")); else document.getElementById("hereSmall").append(document.getElementById("movableDiv"));
-}
 document.getElementById("quality").addEventListener("input", function () {
     document.getElementById("qualityPercentage").textContent = Math.round(document.getElementById("quality").value * 100);
 }, false)
@@ -250,7 +247,7 @@ document.getElementById("fileOpen").addEventListener("change", function () {
                 } else {
                     imgDataConvert.push(fileRead.result);
                     finalExtension.push(item.name.substring(item.name.lastIndexOf(".") + 1));
-                    fileNameData.push(`${item.name.substring(0, item.name.lastIndexOf("."))}.${document.getElementById("select").value}`);
+                    fileNameData.push(`${item.name.substring(0, item.name.lastIndexOf("."))}.${document.querySelector(".btnSelected").getAttribute("data-select")}`);
                 }
                 itemReadProgression++;
                 if (document.getElementById("fileOpen").files.length > itemReadProgression) loadItems(); else startConvert();
@@ -288,7 +285,7 @@ async function getClipboard() {
             let blob = await item.getType(item.types[isImage[i]]);
             imgDataConvert.push(URL.createObjectURL(blob));
             finalExtension.push(item.types[isImage[i]].substring(item.types[isImage[i]].indexOf("/") + 1));
-            fileNameData.push(`clipboard.${document.getElementById("select").value}`);
+            fileNameData.push(`clipboard.${document.querySelector(".btnSelected").getAttribute("data-select")}`);
         }
     }
     startConvert();
@@ -302,9 +299,6 @@ document.getElementById("resizePercentage").addEventListener("change", function 
 document.getElementById("resizeRange").oninput = function () {
     document.getElementById("percentageResizeText").textContent = Math.round(document.getElementById("resizeRange").value * 100);
 }
-document.getElementById("select").addEventListener("change", function () {
-    if (document.getElementById("select").value == "png") document.getElementById("outputQualityDiv").style.display = "none"; else document.getElementById("outputQualityDiv").style.display = "inline";
-}, false);
 if (window.location.href.indexOf("fromedgeimg") !== -1) {
     document.getElementById("goBack").style.display = "inline";
     document.getElementById("introduction").style.display = "none";
@@ -347,7 +341,7 @@ for (let i = 0; i < localItems.length; i++) {
 document.getElementById("qualityPercentage").textContent = Math.round(document.getElementById("quality").value * 100);
 if (localStorage.getItem("imageconverter-resizeRange") !== null) document.getElementById("percentageResizeText").textContent = Math.round(parseFloat(localStorage.getItem("imageconverter-resizeRange")) * 100);
 if (document.getElementById("clipBtn").style.display !== "none") document.getElementById("addBtn").style.marginRight = "25px";
-if (navigator.userAgent.toLowerCase().indexOf("safari") !== -1 && navigator.userAgent.toLowerCase().indexOf("chrome") === -1) document.getElementById("select").removeChild(document.getElementById("webp"));
+if (navigator.userAgent.toLowerCase().indexOf("safari") !== -1 && navigator.userAgent.toLowerCase().indexOf("chrome") === -1) document.querySelector("[data-select=webp]").remove();
 function dialogManager(id, close) {
     if (close) {
         document.getElementById(id).style.opacity = 0;
@@ -423,9 +417,8 @@ window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
     installationPrompt = event;
 });
-document.getElementById("appInstall").addEventListener("click", () => { installationPrompt.prompt(); });
-for (let item of document.querySelectorAll("[data-license]")) item.addEventListener("click", () => {
-    document.getElementById("licenseLabel").innerHTML = `Copyright (c) ${item.getAttribute("data-license")}<br><br>Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+function getMit(license) {
+    return `Copyright (c) ${license}<br><br>Permission is hereby granted, free of charge, to any person obtaining a copy of this software
     and associated documentation files (the "Software"), to deal in the Software without restriction, including
     without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
@@ -435,7 +428,21 @@ for (let item of document.querySelectorAll("[data-license]")) item.addEventListe
     PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
     OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.`
-})
+}
+document.getElementById("appInstall").addEventListener("click", () => { installationPrompt.prompt(); });
+for (let item of document.querySelectorAll("[data-license]")) item.addEventListener("click", () => {
+    document.getElementById("licenseLabel").innerHTML = getMit(item.getAttribute("data-license"));
+    document.querySelector(".licenseSelected").classList.remove("licenseSelected");
+    item.classList.add("licenseSelected");
+});
+document.querySelector(".licenseSelected").click();
 document.getElementById("iconText").addEventListener("click", () => {
-    document.getElementById("licenseLabel").innerHTML = "Icons are provided by Microsoft's Fluent UI Icons.";
+    document.querySelector(".licenseSelected").classList.remove("licenseSelected");
+    document.getElementById("iconText").classList.add("licenseSelected");
+    document.getElementById("licenseLabel").innerHTML = `Icons are provided by Microsoft's Fluent UI Icons.\n\n${getMit("2020 Microsoft Corporation")}`;
+});
+for (let item of document.querySelectorAll("[data-select]")) item.addEventListener("click", () => {
+    document.querySelector(".btnSelected").classList.remove("btnSelected");
+    item.classList.add("btnSelected");
+    if (item.getAttribute("data-select") === "png") document.getElementById("outputQualityDiv").style.display = "none"; else document.getElementById("outputQualityDiv").style.display = "inline";
 })
