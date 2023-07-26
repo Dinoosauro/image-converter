@@ -3,8 +3,6 @@ Convert (and compress) lots of image formats into JPEG, PNG and WebP formats, lo
 
 Try it: https://dinoosauro.github.io/image-converter/
 ## What you can do:
-![Screenshot 2023-07-07 alle 23 46 06](https://github.com/Dinoosauro/image-converter/assets/80783030/8386f0b6-7ef5-4ba5-a655-3c889f32b050)
-
 
 After opening the website, you can change the output file format and the image quality (for JPG and WebP). 
 
@@ -15,6 +13,7 @@ Then, look at the resizing options: you can resize the images by putting a perce
 Now you can choose the images to convert. You can convert directly the images you've in your clipboard (only if zip option is disabled), otherwise you can also choose the photos from a folder. At the end, the images or the zip file will be downloaded automatically, except if you've disabled the "Download the zip file immediately" option. In that case, you'll see a button called "Download zip". Click it and the zip file will be downloaded.
 
 Lastly, you can change themes: click the icon on the top of the page and you'll be able to select three themes (Light, Dark, Dracula). If you want, you can create your own one by changing the color from the inputs below the selector.
+![image](https://github.com/Dinoosauro/image-converter/assets/80783030/1a9ed48b-dff3-4717-9d21-ae8e4df93392)
 
 ## HEIC and TIFF support
 Even if most browsers don't support HEIC/HEIF photos, image-converter uses the open-source library [heic2any](https://github.com/alexcorvi/heic2any) to decode HEIC photos. 
