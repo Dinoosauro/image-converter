@@ -341,7 +341,13 @@ for (let i = 0; i < localItems.length; i++) {
 document.getElementById("qualityPercentage").textContent = Math.round(document.getElementById("quality").value * 100);
 if (localStorage.getItem("imageconverter-resizeRange") !== null) document.getElementById("percentageResizeText").textContent = Math.round(parseFloat(localStorage.getItem("imageconverter-resizeRange")) * 100);
 if (document.getElementById("clipBtn").style.display !== "none") document.getElementById("addBtn").style.marginRight = "25px";
-if (navigator.userAgent.toLowerCase().indexOf("safari") !== -1 && navigator.userAgent.toLowerCase().indexOf("chrome") === -1) document.querySelector("[data-select=webp]").remove();
+if (navigator.userAgent.toLowerCase().indexOf("safari") !== -1 && navigator.userAgent.toLowerCase().indexOf("chrome") === -1) {
+    document.querySelector("[data-select=webp]").remove();
+    safariFixSlider();
+}
+function safariFixSlider() {
+    if (navigator.userAgent.toLowerCase().indexOf("safari") !== -1 && navigator.userAgent.toLowerCase().indexOf("chrome") === -1) document.getElementById("safariStyle").innerHTML = `select {-webkit-appearance: none; width: 70%; background-image: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='rgb(${hexToRgbNew(document.querySelector("[data-change=text]").value.substring(1))})' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>"); background-position: 100% 50%; background-repeat: no-repeat; font-size: 10pt} input[type='range'],input[type='range']::-webkit-slider-runnable-track,input[type='range']::-webkit-slider-thumb {-webkit-appearance: none;border-radius: 15px;}`;
+}
 function dialogManager(id, close) {
     if (close) {
         document.getElementById(id).style.opacity = 0;
@@ -400,6 +406,9 @@ for (let item of document.querySelectorAll("[data-change]")) {
         localStorage.setItem("imageconverter-theme", JSON.stringify(JSONParse));
     });
 }
+document.querySelector("[data-change=text]").addEventListener("input", () => {
+    safariFixSlider();  
+})
 changeTheme();
 for (let item of document.getElementsByClassName("hoverAnimate")) item.addEventListener("mouseleave", () => {
     item.classList.add("hoverAnimateBack");

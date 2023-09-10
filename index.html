@@ -11,9 +11,7 @@
     <link rel="apple-touch-icon" href="./icon.png" />
     <meta name="apple-mobile-web-app-status-bar" content="#151515" />
     <meta name="theme-color" content="#865e5e" />
-    <style>
-
-    </style>
+    <style id="safariStyle"></style>
 </head>
 
 <body>
@@ -31,7 +29,7 @@
     </div>
     <button id="goBack" class="hoverAnimate" style="display: none;">Back to previous step</button>
     <div class="flexAdaptive">
-        <div class="container leftCard">
+        <div class="container">
             <div class="insideContainer">
                 <h2>Options:</h2>
                 <l>Choose the output file format:</l><br><br>
@@ -51,7 +49,7 @@
                 
             </div>
         </div>
-    <div class="container rightCard">
+    <div class="container">
         <div class="insideContainer">
             <h2>Settings:</h2>
             <h3>Resize image:</h3>
@@ -87,7 +85,7 @@
             </div><br>
         </div>
     </div>
-        <div class="container leftCard">
+        <div class="container">
             <div class="insideContainer">
                 <h2>Start conversion:</h2>
                 <div style="display: flex; justify-content: center;">
@@ -103,7 +101,7 @@
                 </div>
         </div>
     </div>
-    <div class="container rightCard">
+    <div class="container">
         <div class="insideContainer">
             <h2>Progress:</h2>
             <div><progress value="0" max="1" id="progressbar" class="fill"></progress></div><br><br>
@@ -111,7 +109,7 @@
             <l id="progressfinish" style="display: none;" class="textcenter">Finished converting!</l>
         </div>
     </div>
-    <div class="container fill" style="margin-right: 5px;">
+    <div class="container">
         <div class="insideContainer">
             <h2>Download items:</h2>
             <l>If you accidentally canceled a download, or your browser blocked it (especially on some mobile browsers),
@@ -134,11 +132,13 @@
             <option value="0">Standard Dark</option>
             <option value="2">Dracula Dark</option>
         </select><br><br>
-        <l>Background:</l><input type="color" data-change="background" class="dialogColor hoverAnimate"><br>
-        <l>Text:</l><input type="color" data-change="text" class="dialogColor hoverAnimate"><br>
-        <l>Card:</l><input type="color" data-change="card" class="dialogColor hoverAnimate"><br>
-        <l>Input:</l><input type="color" data-change="input" class="dialogColor hoverAnimate"><br>
-        <l>Accent:</l><input type="color" data-change="accent" class="dialogColor hoverAnimate"><br><br>
+        <div class="themeChanger">
+            <div><l>Background:</l><input type="color" data-change="background" class="dialogColor hoverAnimate"></div>
+            <div><l>Text:</l><input type="color" data-change="text" class="dialogColor hoverAnimate"></div>
+            <div><l>Card:</l><input type="color" data-change="card" class="dialogColor hoverAnimate"></div>
+            <div><l>Input:</l><input type="color" data-change="input" class="dialogColor hoverAnimate"></div>
+            <div><l>Accent:</l><input type="color" data-change="accent" class="dialogColor hoverAnimate"></div>    
+        </div><br><br>
         <button class="accent hoverAnimate" onclick="dialogManager('themeDialog', true)">
             <l>Close</l>
         </button>
