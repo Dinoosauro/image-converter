@@ -4,14 +4,16 @@
     --card: rgb(210, 210, 210);
     --input: rgb(220, 220, 220);
     --accent: #26A69A;
+    --margin: 250px
 }
 
 body {
     color: var(--text);
     background-color: var(--background);
     font-family: 'Work Sans', sans-serif;
-    padding: 2vw;
+    padding: 15px;
     padding-top: 5px;
+    padding-right: 0px;
 }
 
 h1,
@@ -36,54 +38,31 @@ h4 {
     background-color: var(--card);
     padding: 3vw;
     border-radius: 8px;
-    width: 40vw;
-    margin-bottom: 25px;
-}
-
-.leftCard {
-    margin-right: 1vw;
-}
-
-.rightCard {
-    margin-left: 1vw;
+flex: 1 0 330px;
+margin-bottom: 25px;
 }
 .fill {
     width: -webkit-fill-available !important;
     width: -moz-available !important;
     margin-left: 0px;
   }
+  .flexAdaptive > div{
+    margin-right: 15px;
+}
+
 .flexAdaptive {
     display: flex;
     flex-wrap: wrap;
 }
 
-@media only screen and (max-width: 799px) {
-    .flexAdaptive {
-        display: block;
-    }
-
-    .container {
-        width: 94%;
-    }
-
-    .leftCard {
-        margin-right: 0px;
-    }
-
-    .rightCard {
-        margin-left: 0px;
-    }
-}
-
 .insideContainer {
     background-color: var(--card);
     border-radius: 8px;
-    width: 90%;
-    padding: 25px;
+    padding: 2px;
 }
 
 h2 {
-    margin-top: 0px;
+    margin-top: 10px;
 }
 
 input {
@@ -109,13 +88,13 @@ select {
     color: var(--text);
 }
 
-button {
+button, .themeChanger > div {
     background-color: var(--input);
     color: var(--text);
     height: 50px;
     width: 35%;
     border-radius: 8px;
-    color: rgb(240, 240, 240);
+    color: var(--text);
     margin-right: 25px;
     padding-left: 8px;
     padding-right: 8px;
@@ -123,7 +102,20 @@ button {
     font-family: 'Work Sans', sans-serif;
     border: 2px var(--input) solid;
 }
-
+.themeChanger > div {
+    margin-right: 10px;
+    flex: 1 0 150px;
+    width: 100% !important;
+    height: auto !important;
+    padding: 10px;
+}
+input[type=color] {
+    width: 65px;
+}
+.themeChanger {
+    display: flex;
+    overflow: auto;
+}
 a {
     color: var(--accent)
 }
@@ -227,6 +219,7 @@ dialog {
     border-color: var(--text);
     color: var(--text);
     max-height: 80vh;
+    max-width: 80vw;
     overflow-y: show;
     position: fixed;
     opacity: 0;
@@ -252,8 +245,6 @@ dialog {
 dialog {
     top: 50%;
     bottom: 50%;
-    margin-left: 5%;
-    margin-right: 5%;
     text-overflow: clip;
 }
 
@@ -336,6 +327,24 @@ a:hover {
   input[type=range] {
     accent-color: var(--accent);
     padding: 0px;
+  }
+  input[type='range']::-webkit-slider-runnable-track {
+    height: 5px;
+    background: var(--accent);
+    background-size: var(--background-size, 0%) 100%;
+    background-repeat: no-repeat;
+    border-radius: 15px;
+  }
+  
+  input[type='range']::-webkit-slider-thumb {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    background: var(--accent);
+    border: solid var(--accent) 1px;
+    border-radius: 50%;
+    margin-top: -5px;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.4);
   }
   
   input[type=checkbox]:checked+.slider {
