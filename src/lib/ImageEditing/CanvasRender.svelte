@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { hasContext, onMount } from "svelte";
+    import { afterUpdate, hasContext, onMount } from "svelte";
     import {
         conversionProgress,
         convertFiles,
         currentImageEditing,
         forceCanvasUpdate,
         measureMap,
+        type FileConversion,
     } from "../../Scripts/Storage";
     import { ExportFile, getZip, restoreZip } from "../../Scripts/ExportFile";
     import FileSystemHandle from "../../Scripts/FileSystemHandle";
@@ -24,8 +25,8 @@
             img.src = URL.createObjectURL(
                 $convertFiles[$currentImageEditing].blob,
             );
-            img.onload = () => {
-                reRender();
+            img.onload = async () => {
+                await reRender();
                 resolve();
             };
             img.onerror = () => reject();
@@ -65,26 +66,32 @@
         }
     }
     function reRender() {
-        if (canvas === undefined) return;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-            const spinner = createSpinner();
-            setTimeout(() => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                const proportions = getProportions();
-                canvas.width = proportions[0];
-                canvas.height = proportions[1];
-                let outputStr = "";
-                for (let key in $convertFiles[$currentImageEditing].filters ??
-                    {}) {
-                    // @ts-ignore
-                    outputStr += `${key}(${$convertFiles[$currentImageEditing].filters[key]}${measureMap.get(key)}) `;
-                }
-                ctx.filter = outputStr;
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                spinner.remove();
-            }, 40);
-        }
+        return new Promise<void>((resolve, reject) => {
+            if (canvas === undefined) {
+                console.warn("Canvas undefined!");
+                reject();
+            }
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+                const spinner = createSpinner();
+                setTimeout(() => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    const proportions = getProportions();
+                    canvas.width = proportions[0];
+                    canvas.height = proportions[1];
+                    let outputStr = "";
+                    for (let key in $convertFiles[$currentImageEditing]
+                        .filters ?? {}) {
+                        // @ts-ignore
+                        outputStr += `${key}(${$convertFiles[$currentImageEditing].filters[key]}${measureMap.get(key)}) `;
+                    }
+                    ctx.filter = outputStr;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    spinner.remove();
+                    resolve();
+                }, 40);
+            } else reject();
+        });
     }
     onMount(() => updateView());
     forceCanvasUpdate.subscribe(() => reRender());
@@ -123,6 +130,50 @@
             );
         });
     }
+    interface BatchConvertObj {
+        id: string;
+        update: boolean;
+        showText: string;
+        updateVal: (keyof FileConversion)[];
+    }
+    let batchConvertItems: BatchConvertObj[] = [];
+    const batchConvertText = [
+        "Image output format",
+        "Width/height settings",
+        "Quality settings",
+        "Filter settings",
+    ];
+    const availableOptions: (keyof FileConversion)[][] = [
+        ["mimeType"],
+        ["scaleType", "scale"],
+        ["quality"],
+        ["filters"],
+    ];
+    for (let i = 0; i < 4; i++)
+        batchConvertItems[i] = {
+            id: `Checkbox-${Math.random()}`,
+            update: false,
+            showText: batchConvertText[i],
+            updateVal: availableOptions[i],
+        };
+    function updateBatchCheckbox(e: Event, ref: number) {
+        batchConvertItems[ref].update = (e.target as HTMLInputElement).checked;
+    }
+    function applyBatchCheckbox() {
+        for (let i = 0; i < batchConvertItems.length; i++) {
+            if (batchConvertItems[i].update)
+                for (let x = 0; x < $convertFiles.length; x++) {
+                    for (let option of batchConvertItems[i].updateVal)
+                        $convertFiles[x][option as "blob"] = $convertFiles[
+                            $currentImageEditing
+                        ][option] as Blob;
+                }
+        }
+        batchDialog.style.opacity = "0";
+        setTimeout(() => (showBatchDialog = false), 210);
+    }
+    let batchDialog: HTMLDivElement;
+    $: showBatchDialog = false;
 </script>
 
 <div class="card">
@@ -135,7 +186,7 @@
                 const name = formatFileName($currentImageEditing);
                 let handle;
                 try {
-                    if (localStorage.getItem("ImageConverter-FSApi") !== "a")
+                    if (localStorage.getItem("ImageConverter-FSApi") === "a")
                         throw new Error(
                             "The user has disabled the usage of File System API",
                         );
@@ -170,7 +221,7 @@
             on:click={async () => {
                 let handle;
                 try {
-                    if (localStorage.getItem("ImageConverter-FSApi") !== "a")
+                    if (localStorage.getItem("ImageConverter-FSApi") === "a")
                         throw new Error(
                             "The user has disabled the usage of File System API",
                         );
@@ -200,7 +251,21 @@
             }}>Export all images</button
         >
     </div>
-    <br />
+    <button
+        style="background-color: var(--second); margin-top: 5px;"
+        on:click={() => {
+            showBatchDialog = true;
+            // TODO: Move this on afterMount, this solution is horrible
+            const interval = setInterval(() => {
+                if (!batchDialog) return;
+                batchDialog.style.opacity = "1";
+                for (let i = 0; i < batchConvertItems.length; i++)
+                    batchConvertItems[i].update = false;
+                clearInterval(interval);
+            }, 15);
+        }}>Apply current preferences to every image</button
+    >
+    <br /><br />
     <div class="checkContainer">
         <input type="checkbox" id={zipId} bind:checked={exportAsZip} /><label
             for={zipId}>Save as a zip file</label
@@ -211,6 +276,34 @@
         <canvas bind:this={canvas}></canvas>
     </div>
 </div>
+
+{#if showBatchDialog}
+    <div class="dialogContainer" bind:this={batchDialog}>
+        <div class="fullDialog">
+            <TitleIcon asset="image">Batch conversion settings:</TitleIcon>
+            <p>
+                From each slider below, choose which properties of this image
+                should be applied to every image currently uploaded. Note that,
+                if you upload more images, you'll need to apply these properties
+                again.
+            </p>
+            <br />
+            {#each batchConvertItems as text, i}
+                <div class="second card" style="margin-bottom: 10px;">
+                    <div class="checkContainer">
+                        <input
+                            type="checkbox"
+                            id={text.id}
+                            on:change={(e) => updateBatchCheckbox(e, i)}
+                        /><label for={text.id}>{text.showText}</label>
+                    </div>
+                </div>
+            {/each}
+            <br /><br />
+            <button on:click={() => applyBatchCheckbox()}>Apply</button>
+        </div>
+    </div>
+{/if}
 
 <style>
     canvas {

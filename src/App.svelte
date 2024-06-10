@@ -48,6 +48,7 @@
     { name: "Svelte", extra: "2016-24 these people" },
     { name: "heic2any", extra: "2020 Alex Corvi" },
     { name: "UTIF.js", extra: "2017 Photopea" },
+    { name: "context-filter-polyfill", extra: "2019 David Enke" },
   ];
   $: selectedLicense = "JSZip";
   function applyNewTheme(prop: string, val: string) {
@@ -174,7 +175,9 @@
           id={fileSystemAPIId}
           on:change={fileSystemAPIChange}
         />
-        <label for={fileSystemAPIId}>Use File System API if available</label>
+        <label for={fileSystemAPIId}
+          >Avoid using the File System API (if available)</label
+        >
       </div>
     </div>
     <br /><br />

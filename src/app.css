@@ -150,6 +150,7 @@ button:active {
   height: 10vh;
   border-radius: 8px;
   flex-shrink: 0;
+  object-fit: cover;
 }
 
 .multiPage {
