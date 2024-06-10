@@ -1,0 +1,28 @@
+{
+  "name": "image-renderer",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.0.2",
+    "@tsconfig/svelte": "^5.0.2",
+    "@types/utif": "^3.0.5",
+    "svelte": "^4.2.12",
+    "svelte-check": "^3.6.7",
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0"
+  },
+  "dependencies": {
+    "context-filter-polyfill": "^0.3.13",
+    "heic2any": "^0.0.4",
+    "jszip": "^3.10.1",
+    "utif": "^3.1.0"
+  }
+}

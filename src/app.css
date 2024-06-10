@@ -1,0 +1,264 @@
+:root {
+  --background: #151515;
+  --text: #fafafa;
+  --struct: #313131;
+  --second: #4d4d4d;
+  --accent: #138375;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+  font-family: 'Work Sans', sans-serif;
+  padding: 10px;
+}
+
+.flex,
+.checkContainer {
+  display: flex;
+}
+
+.hcenter,
+.checkContainer {
+  align-items: center;
+}
+
+.checkContainer {
+  position: relative;
+}
+
+.wcenter {
+  justify-content: center;
+}
+
+.card {
+  padding: 10px;
+  background-color: var(--struct);
+  border-radius: 8px;
+}
+
+input[type=checkbox] {
+  width: 65px;
+  height: 20px;
+  border-radius: 12px;
+  background-color: var(--struct);
+  appearance: none;
+  transition: background-color 0.2s ease-in-out;
+  margin-right: 10px;
+}
+
+input[type=checkbox]::before {
+  width: 16px;
+  height: 16px;
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  border-radius: 50%;
+  background-color: var(--text);
+  transition: transform 0.2s ease-in-out;
+}
+
+select,
+input:not([type=range]):not([type=checkbox]) {
+  background-color: var(--struct);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--text);
+  font-family: 'Work Sans', sans-serif;
+  color: var(--text);
+}
+
+.card input,
+.card select {
+  background-color: var(--second) !important;
+}
+
+.second select {
+  background-color: var(--struct) !important;
+}
+
+input[type=checkbox]:checked::before {
+  transform: translateX(45px);
+}
+
+input[type=checkbox]:checked {
+  background-color: var(--accent) !important;
+}
+
+.fullWidth,
+button,
+input[type=range],
+select {
+  width: 100%;
+  width: -moz-available;
+  width: -webkit-fill-available;
+}
+
+input:not([type=range]) {
+  margin-right: 10px;
+}
+
+button {
+  background-color: var(--accent);
+  color: var(--text);
+  font-family: 'Work Sans', sans-serif;
+  padding: 10px;
+  border: 1px solid var(--text);
+  border-radius: 8px;
+  transition: filter 0.2s ease-in-out;
+}
+
+button:hover,
+.pointer:hover,
+input:hover,
+select:hover,
+.spanLink:hover {
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(130%);
+}
+
+button:active {
+  filter: brightness(160%);
+}
+
+.card>h2 {
+  text-align: center;
+}
+
+.second {
+  background-color: var(--second);
+}
+
+.second input {
+  background-color: var(--struct) !important;
+}
+
+.circular {
+  background-color: var(--accent);
+  border-radius: 16px;
+  padding: 5px 15px;
+  overflow: auto;
+  display: flex;
+}
+
+.contentImg {
+  width: 10vh;
+  height: 10vh;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.multiPage {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.multiPage>div,
+.multiAdapt>div {
+  flex: 1 0 400px;
+  max-width: 100%;
+  max-width: -moz-available;
+  max-width: -webkit-fill-available;
+}
+
+.topDialog,
+.fullDialog {
+  position: fixed;
+  top: 5vh;
+  left: 15vw;
+  width: 70vw;
+  border-radius: 12px;
+  padding: 20px 15px;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.topDialog {
+  backdrop-filter: blur(8px) brightness(30%);
+  -webkit-backdrop-filter: blur(8px) brightness(30%);
+}
+
+.fullDialog {
+  top: 10vh;
+  max-height: 80vh;
+  background-color: var(--struct);
+  width: 70vw;
+  overflow: auto;
+}
+
+.dialogContainer {
+  backdrop-filter: blur(16px) brightness(40%);
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+a {
+  color: var(--text)
+}
+
+.circular>div {
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.circular,
+.circular>div {
+  overflow: auto;
+}
+
+.circular {
+  flex: 1 0 fit-content;
+}
+
+.flexWrap {
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.spanLink {
+  text-decoration: underline;
+}
+
+.drop {
+  border-radius: 8px;
+  border: 1px dashed var(--text);
+}
+
+@keyframes spinner {
+  0% {
+    transform: scale(0);
+  }
+
+  75% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(0);
+  }
+}
+
+.spinner {
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spinner 1s ease-in-out infinite;
+  background-color: var(--accent);
+}
+
+.fullSpinner {
+  position: fixed;
+  top: calc(50vh - 50px);
+  left: calc(50vw - 50px);
+  width: 100px;
+  height: 100px;
+}
