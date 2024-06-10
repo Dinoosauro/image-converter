@@ -3,6 +3,11 @@
 Convert images frmo various formats to JPG/PNG/WebP, by resizing them and adding
 filters.
 
+Try it: https://dinoosauro.github.io/image-converter/
+
+Looking for the old, vanilla HTML/CSS/JS version? Check the
+[old-js-website repository](https://github.com/Dinoosauro/image-converter/tree/old-javascript-website)
+
 ## How it works
 
 ### Choose a file
@@ -56,3 +61,12 @@ In the settings, you can:
   specific folder selected by the user (Currently available only on
   Chromium-based browsers)
 - See the open source licenses
+
+## Progressive Web App You can install image-converter as a Progressive Web App.
+With this, you'll be able to use it offline, and you'll be also be able to open
+files from the system's file explorer.
+
+## Privacy
+
+Your images are locally elaborated on your device, and nothing is sent to an
+external server.

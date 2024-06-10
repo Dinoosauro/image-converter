@@ -15,6 +15,7 @@
   import Assets from "./lib/Styles/Assets.svelte";
   import TitleIcon from "./lib/Styles/TitleIcon.svelte";
   import { updateAccentImage } from "./Scripts/ImageContentHandler";
+  import Privacy from "./lib/Privacy.svelte";
   $: dialogShow = 0;
   const fileSystemAPIId = `Checkbox-${Math.random().toString().substring(2)}`;
   afterUpdate(() => {
@@ -119,6 +120,7 @@
     {#if !window.matchMedia("(display-mode: standalone)").matches}
       <PWAPrompt></PWAPrompt>
     {/if}
+    <Privacy></Privacy>
   </div>
 {:else if $conversionStatus === 1}
   <ImagePicker></ImagePicker><br />
