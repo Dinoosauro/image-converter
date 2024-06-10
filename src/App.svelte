@@ -15,7 +15,6 @@
   import Assets from "./lib/Styles/Assets.svelte";
   import TitleIcon from "./lib/Styles/TitleIcon.svelte";
   import { updateAccentImage } from "./Scripts/ImageContentHandler";
-  import Icon from "./assets/icon.svg";
   $: dialogShow = 0;
   const fileSystemAPIId = `Checkbox-${Math.random().toString().substring(2)}`;
   afterUpdate(() => {
@@ -113,9 +112,6 @@
   on:dragenter={() => document.documentElement.classList.add("drop")}
   on:dragleave={() => document.documentElement.classList.remove("drop")}
 />
-<svelte:head>
-  <link rel="icon" href={Icon} />
-</svelte:head>
 <Header></Header><br />
 {#if $conversionStatus === 0}
   <div class="flex multiPage">

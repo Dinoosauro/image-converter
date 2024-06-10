@@ -3,7 +3,7 @@ const filestoCache = [
     './',
     './index.html',
     './icon.png',
-    './assets/icon.svg',
+    './icon.svg',
     './assets/heic2any.js',
     './assets/index.css',
     './assets/index.js',
