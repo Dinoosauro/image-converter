@@ -1,0 +1,72 @@
+{
+    "name": "image-converter",
+    "short_name": "image-converter",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#151515",
+    "theme_color": "#138375",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "./icon.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "file_handlers": [
+        {
+            "action": "./",
+            "accept": {
+                "image/jpeg": [
+                    ".jpg",
+                    ".jpeg",
+                    ".jfif",
+                    ".pjpeg",
+                    ".pjp",
+                    ".heic",
+                    ".heif",
+                    ".heifs",
+                    ".heics"
+                ],
+                "image/png": [
+                    ".png"
+                ],
+                "image/gif": [
+                    ".gif"
+                ],
+                "image/webp": [
+                    ".webp"
+                ],
+                "image/avif": [
+                    ".avif"
+                ],
+                "image/apng": [
+                    ".apng"
+                ],
+                "image/bmp": [
+                    ".bmp"
+                ],
+                "image/x-icon": [
+                    ".ico",
+                    ".cur"
+                ],
+                "image/tiff": [
+                    ".tiff",
+                    ".tif"
+                ],
+                "image/heic": [
+                    ".heif",
+                    ".heifs",
+                    ".heic",
+                    ".heics"
+                ],
+                "image/heif": [
+                    ".heif",
+                    ".heifs",
+                    ".heic",
+                    ".heics"
+                ]
+            }
+        }
+    ]
+}

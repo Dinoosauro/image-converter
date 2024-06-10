@@ -10,7 +10,6 @@
     } from "../../Scripts/Storage";
     import { ExportFile, getZip, restoreZip } from "../../Scripts/ExportFile";
     import FileSystemHandle from "../../Scripts/FileSystemHandle";
-    import { get } from "svelte/store";
     import TitleIcon from "../Styles/TitleIcon.svelte";
     import createSpinner from "../../Scripts/CreateSpinner";
     let exportAsZip = localStorage.getItem("ImageConverter-SaveZip") === "a";
@@ -30,6 +29,7 @@
                 resolve();
             };
             img.onerror = () => reject();
+            document.title = `[${$currentImageEditing + 1}/${$convertFiles.length}] ${$convertFiles[$currentImageEditing].fileName} | image-converter`;
         });
     }
     function getProportions() {

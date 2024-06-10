@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import FilePicker from "../Scripts/FilePicker";
     import {
         conversionStatus,
@@ -6,6 +7,7 @@
         type FileConversion,
     } from "../Scripts/Storage";
     import TitleIcon from "./Styles/TitleIcon.svelte";
+    import FileArrayHandler from "../Scripts/FileArrayHandler";
     const file = FilePicker;
     $: folderPickerName = file.webkitdirectory ? "a folder" : "files";
     const inputId = `CheckBox-${Math.random().toString().substring(2)}`;
@@ -39,6 +41,18 @@
             conversionStatus.set(1);
         }
     }
+    onMount(() => {
+        if ("launchQueue" in window) {
+            (window.launchQueue as any).setConsumer(
+                async (launchParams: any) => {
+                    const arr = [];
+                    for (let item of launchParams.files)
+                        arr.push(await item.getFile());
+                    FileArrayHandler(arr);
+                },
+            );
+        }
+    });
 </script>
 
 <div class="card">

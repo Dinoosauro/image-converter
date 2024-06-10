@@ -9,7 +9,7 @@ export interface FileConversion {
     quality?: number,
     mimeType?: string
 }
-export type AssetsType = "settings" | "documentadd" | "resizeimage" | "imagesparkle" | "image" | "color" | "folder" | "paragraph";
+export type AssetsType = "settings" | "documentadd" | "resizeimage" | "imagesparkle" | "image" | "color" | "folder" | "paragraph" | "apps" | "imgmultiple";
 import { writable } from "svelte/store";
 
 export let conversionStatus = writable(0);

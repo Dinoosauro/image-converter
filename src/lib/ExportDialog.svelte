@@ -51,8 +51,9 @@
     <div class="flex hcenter">
         <div class="spinner" style="margin-right: 10px"></div>
         <label
-            >Converting image {$conversionProgress ??
-                "operation completed"}</label
+            >Converting image {$conversionProgress !== undefined
+                ? $conversionProgress + 1
+                : "operation completed"}</label
         >
         <label
             style="margin-left: 10px; text-decoration: underline"

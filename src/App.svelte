@@ -5,6 +5,7 @@
   import Picker from "./lib/Picker.svelte";
   import Resize from "./lib/ImageEditing/Resize.svelte";
   import Filter from "./lib/ImageEditing/Filter.svelte";
+  import PWAPrompt from "./lib/PWAPrompt.svelte";
   import CanvasRender from "./lib/ImageEditing/CanvasRender.svelte";
   import ImagePicker from "./lib/ImageEditing/ImagePicker.svelte";
   import ExportDialog from "./lib/ExportDialog.svelte";
@@ -117,7 +118,12 @@
 </svelte:head>
 <Header></Header><br />
 {#if $conversionStatus === 0}
-  <Picker></Picker>
+  <div class="flex multiPage">
+    <Picker></Picker>
+    {#if !window.matchMedia("(display-mode: standalone)").matches}
+      <PWAPrompt></PWAPrompt>
+    {/if}
+  </div>
 {:else if $conversionStatus === 1}
   <ImagePicker></ImagePicker><br />
   <div class="flex multiPage">
@@ -131,7 +137,10 @@
 {/if}
 <ExportDialog></ExportDialog>
 <br /><br /><br />
-<span style="position: absolute; right: 15px; top: 15px; transform: scale(0.9)">
+<span
+  style="position: absolute; right: 15px; top: 15px; transform: scale(0.9)"
+  class="pointer"
+>
   <Assets imgKey="settings" click={() => (dialogShow = 1)}></Assets>
 </span>
 {#if dialogShow === 1}
@@ -189,12 +198,11 @@
           >GitHub</a
         >
       </p>
-      <br />
       <p>
         image-converter also uses some third-party libraries to work. You can
         see their licenses below, by selecting their name.
       </p>
-      <br /><br />
+      <br />
       <div class="card">
         <select bind:value={selectedLicense}>
           {#each availableLicenses as { name }}

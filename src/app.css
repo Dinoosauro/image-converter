@@ -39,12 +39,14 @@ body {
 
 input[type=checkbox] {
   width: 65px;
+  min-width: 65px;
   height: 20px;
   border-radius: 12px;
   background-color: var(--struct);
   appearance: none;
   transition: background-color 0.2s ease-in-out;
   margin-right: 10px;
+  position: relative;
 }
 
 input[type=checkbox]::before {
@@ -52,8 +54,8 @@ input[type=checkbox]::before {
   height: 16px;
   content: "";
   position: absolute;
-  top: 5px;
-  left: 6px;
+  top: 2px;
+  left: 3px;
   border-radius: 50%;
   background-color: var(--text);
   transition: transform 0.2s ease-in-out;
@@ -79,7 +81,7 @@ input:not([type=range]):not([type=checkbox]) {
 }
 
 input[type=checkbox]:checked::before {
-  transform: translateX(45px);
+  transform: translateX(43px);
 }
 
 input[type=checkbox]:checked {

@@ -5,6 +5,11 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./assets/icon.png" />
+  <meta name="apple-mobile-web-app-status-bar" content="#151515" />
+  <meta name="theme-color" content="#138375" />
   <title>image-converter</title>
   <style>
     .index {
@@ -18,6 +23,18 @@
   <label class="index">Convert and compress images saved on your device or from your clipboard. With image-converter,
     you can convert image from various formats, and compress or convert them directly on your device.</label>
   <script type="module" src="/src/main.ts"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      let registration;
+      const registerServiceWorker = async () => {
+        registration = await navigator.serviceWorker.register('./service-worker.js', { scope: window.location.href.substring(0, window.location.href.lastIndexOf("/") + 1) });
+      };
+      registerServiceWorker();
+    }
+    const appVersion = "2.0.0";
+    fetch("./updatecode.txt", { cache: "no-store" }).then((res) => res.text().then((text) => { if (text.replace("\n", "") !== appVersion) if (confirm(`There's a new version of image-converter. Do you want to update? [${appVersion} --> ${text.replace("\n", "")}]`)) { caches.delete("imageconverter-cache"); location.reload(true); } }).catch((e) => { console.error(e) })).catch((e) => console.error(e));
+  </script>
+
 </body>
 
 </html>
