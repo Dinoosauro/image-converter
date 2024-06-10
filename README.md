@@ -1,7 +1,7 @@
 # image-converter
 
-Convert images frmo various formats to JPG/PNG/WebP, by resizing them and adding
-filters.
+Convert images from lots of image formats (including HEIC/HEIF and TIFF files!)
+to JPEG, PNG or WebP images, by also resizing them and adding filters.
 
 Try it: https://dinoosauro.github.io/image-converter/
 
