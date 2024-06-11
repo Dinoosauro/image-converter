@@ -16,6 +16,8 @@
   import TitleIcon from "./lib/Styles/TitleIcon.svelte";
   import { updateAccentImage } from "./Scripts/ImageContentHandler";
   import Privacy from "./lib/Privacy.svelte";
+  import Licenses from "./lib/Licenses.svelte";
+  import CheckNativeHeicSupport from "./Scripts/CheckNativeHeicSupport";
   $: dialogShow = 0;
   const fileSystemAPIId = `Checkbox-${Math.random().toString().substring(2)}`;
   afterUpdate(() => {
@@ -40,18 +42,6 @@
       accent: "#3ab4a4",
     },
   };
-  const availableLicenses = [
-    {
-      name: "JSZip",
-      extra:
-        "2009-2016 Stuart Knightley, David Duponchel, Franz Buchinger, António Afonso",
-    },
-    { name: "Svelte", extra: "2016-24 these people" },
-    { name: "heic2any", extra: "2020 Alex Corvi" },
-    { name: "UTIF.js", extra: "2017 Photopea" },
-    { name: "context-filter-polyfill", extra: "2019 David Enke" },
-  ];
-  $: selectedLicense = "JSZip";
   function applyNewTheme(prop: string, val: string) {
     document.body.style.setProperty(`--${prop}`, val);
     localStorage.setItem(
@@ -85,10 +75,16 @@
       setTimeout(() => (dialogShow = 0), 210);
     }
   }
-  function fileSystemAPIChange(e: Event) {
+  function fileSystemAPIChange(e: Event, isHeic?: true) {
     localStorage.setItem(
-      "ImageConverter-FSApi",
+      isHeic ? "ImageConverter-HeicLibrary" : "ImageConverter-FSApi",
       (e.target as HTMLInputElement).checked ? "a" : "b",
+    );
+  }
+  function PDFScaleChange(e: Event) {
+    localStorage.setItem(
+      "ImageConverter-PDFScale",
+      (e.target as HTMLInputElement).value,
     );
   }
   function drop(e: DragEvent) {
@@ -105,6 +101,8 @@
     }
     document.documentElement.classList.remove("drop");
   }
+  const pdfScalingId = `Input-${Math.random().toString().substring(2)}`;
+  const heicImageId = `Input-${Math.random().toString().substring(2)}`;
 </script>
 
 <svelte:document
@@ -173,69 +171,56 @@
         </div>
       </div>
     </div>
+    {#if window.showDirectoryPicker !== undefined}
+      <br /><br />
+      <div class="second card">
+        <TitleIcon asset="folder" isH3={true}>File System API:</TitleIcon>
+        <div class="checkContainer">
+          <input
+            type="checkbox"
+            id={fileSystemAPIId}
+            min="0.01"
+            checked={localStorage.getItem("ImageConverter-FSApi") === "a"}
+            on:change={(e) => fileSystemAPIChange(e)}
+          />
+          <label for={fileSystemAPIId}
+            >Avoid using the File System API (if available)</label
+          >
+        </div>
+      </div>
+    {/if}
     <br /><br />
     <div class="second card">
-      <TitleIcon asset="folder" isH3={true}>File System API:</TitleIcon>
+      <TitleIcon asset="documentpdf" isH3={true}
+        >Specific file support</TitleIcon
+      >
       <div class="checkContainer">
-        <input
-          type="checkbox"
-          id={fileSystemAPIId}
-          on:change={fileSystemAPIChange}
-        />
-        <label for={fileSystemAPIId}
-          >Avoid using the File System API (if available)</label
-        >
+        <label for={pdfScalingId}>Scale the PDF:</label><input
+          type="number"
+          style="margin: 0px 10px;"
+          id={pdfScalingId}
+          value={localStorage.getItem("ImageConverter-PDFScale") ?? "1"}
+          on:change={PDFScaleChange}
+        /><label for={pdfScalingId}>time(s)</label>
       </div>
+      {#await CheckNativeHeicSupport() then}
+        <br /><br />
+        <div class="checkContainer">
+          <input
+            id={heicImageId}
+            checked={localStorage.getItem("ImageConverter-HeicLibrary") === "a"}
+            type="checkbox"
+            on:change={(e) => fileSystemAPIChange(e, true)}
+          />
+          <label for={heicImageId}
+            >Use your browser's native HEIC decoder (faster, but doesn't decode
+            multiple images if available)</label
+          >
+        </div>
+      {/await}
     </div>
     <br /><br />
-    <div class="second card">
-      <TitleIcon asset="paragraph" isH3={true}>License:</TitleIcon>
-      <p>
-        image-converter is published under the MIT License. You can see its
-        source code on <a href="https://github.com/Dinoosauro/image-converter"
-          >GitHub</a
-        >
-      </p>
-      <p>
-        image-converter also uses some third-party libraries to work. You can
-        see their licenses below, by selecting their name.
-      </p>
-      <br />
-      <div class="card">
-        <select bind:value={selectedLicense}>
-          {#each availableLicenses as { name }}
-            <option value={name}>{name}</option>
-          {/each}
-        </select><br /><br />
-        <p>
-          MIT License<br /><br />Copyright (c) {availableLicenses.find(
-            (e) => e.name === selectedLicense,
-          )?.extra}<br /><br />Permission is hereby granted, free of charge, to
-          any person obtaining a copy of this software and associated
-          documentation files (the "Software"), to deal in the Software without
-          restriction, including without limitation the rights to use, copy,
-          modify, merge, publish, distribute, sublicense, and/or sell copies of
-          the Software, and to permit persons to whom the Software is furnished
-          to do so, subject to the following conditions:
-        </p>
-        <ul>
-          <li>
-            The above copyright notice and this permission notice shall be
-            included in all copies or substantial portions of the Software.
-          </li>
-          <li>
-            THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-            EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-            MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-            NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
-            BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-            ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-            CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-            SOFTWARE.
-          </li>
-        </ul>
-      </div>
-    </div>
+    <Licenses></Licenses>
   </Dialog>
 {:else if dialogShow === 2}
   <Dialog close={hideDialog}></Dialog>

@@ -1,7 +1,8 @@
 # image-converter
 
 Convert images from lots of image formats (including HEIC/HEIF and TIFF files!)
-to JPEG, PNG or WebP images, by also resizing them and adding filters.
+and PDF documents to JPEG, PNG or WebP images, by also resizing them and adding
+filters. It also supports multiple images/pages for HEIC, TIFF and PDF files
 
 Try it: https://dinoosauro.github.io/image-converter/
 

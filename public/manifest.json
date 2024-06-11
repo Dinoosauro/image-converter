@@ -65,6 +65,9 @@
                     ".heifs",
                     ".heic",
                     ".heics"
+                ],
+                "application/pdf": [
+                    ".pdf"
                 ]
             }
         }

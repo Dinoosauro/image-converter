@@ -9,6 +9,9 @@ const filestoCache = [
     './assets/index.js',
     './assets/index2.js',
     './assets/UTIF.js',
+    './assets/pdf.js',
+    './assets/pdf.worker.js',
+    './assets/__vite-browser-external.js',
     'https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&display=swap'
 ];
 self.addEventListener('install', e => {

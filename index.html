@@ -31,7 +31,7 @@
       };
       registerServiceWorker();
     }
-    const appVersion = "2.0.0";
+    const appVersion = "2.1.0";
     fetch("./updatecode.txt", { cache: "no-store" }).then((res) => res.text().then((text) => { if (text.replace("\n", "") !== appVersion) if (confirm(`There's a new version of image-converter. Do you want to update? [${appVersion} --> ${text.replace("\n", "")}]`)) { caches.delete("imageconverter-cache"); location.reload(true); } }).catch((e) => { console.error(e) })).catch((e) => console.error(e));
   </script>
 
