@@ -256,6 +256,7 @@ a {
   height: 24px;
   animation: spinner 1s ease-in-out infinite;
   background-color: var(--accent);
+  z-index: 1;
 }
 
 .fullSpinner {

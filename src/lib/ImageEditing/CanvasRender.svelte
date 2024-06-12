@@ -2,6 +2,7 @@
     import { afterUpdate, hasContext, onMount } from "svelte";
     import {
         conversionProgress,
+        conversionType,
         convertFiles,
         currentImageEditing,
         forceCanvasUpdate,
@@ -208,6 +209,7 @@
                 } catch (ex) {
                     console.warn(ex);
                 }
+                conversionType.set("conversion");
                 conversionProgress.set($currentImageEditing);
                 await exportCanvas(handle);
                 if (exportAsZip) {
@@ -232,6 +234,7 @@
                 let addName = `ImageConverter-Operation-${Date.now()}`;
                 for (let i = 0; i < $convertFiles.length; i++) {
                     $currentImageEditing = i;
+                    conversionType.set("conversion");
                     conversionProgress.set($currentImageEditing);
                     try {
                         await updateView();

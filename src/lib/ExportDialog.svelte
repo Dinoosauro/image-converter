@@ -1,7 +1,11 @@
 <script lang="ts">
     let div: HTMLDivElement;
     let bottomDiv: HTMLDivElement;
-    import { outputLink, conversionProgress } from "../Scripts/Storage";
+    import {
+        outputLink,
+        conversionProgress,
+        conversionType,
+    } from "../Scripts/Storage";
     function closePopup(useBottomDiv?: boolean) {
         (useBottomDiv ? bottomDiv : div).style.opacity = "0";
         setTimeout(
@@ -51,7 +55,10 @@
     <div class="flex hcenter">
         <div class="spinner" style="margin-right: 10px"></div>
         <label
-            >Converting image {$conversionProgress !== undefined
+            >{$conversionType === "fileopen"
+                ? "Reading file"
+                : "Converting image"}
+            {$conversionProgress !== undefined
                 ? $conversionProgress + 1
                 : "operation completed"}</label
         >

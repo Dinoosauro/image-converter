@@ -30,3 +30,4 @@ export const measureMap = new Map<string, string>([
 ]);
 export let outputLink = writable<string | undefined>();
 export let conversionProgress = writable<number | undefined>();
+export let conversionType = writable<"fileopen" | "conversion">("fileopen");

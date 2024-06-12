@@ -2,7 +2,7 @@ import Dialog from "../lib/Styles/Dialog.svelte";
 import CheckNativeHeicSupport from "./CheckNativeHeicSupport";
 import createSpinner from "./CreateSpinner";
 import ImageBlobHandler from "./ImageBlobHandler";
-import { conversionStatus, convertFiles, type FileConversion } from "./Storage";
+import { conversionProgress, conversionStatus, conversionType, convertFiles, type FileConversion } from "./Storage";
 
 export default async function FileArrayHandler(files: File[] | FileList) {
     if (!localStorage.getItem("ImageConverter-AskEncoding") && (Array.from(files).some(e => e.name.endsWith("heic") || e.name.endsWith("heif")))) {
@@ -17,8 +17,11 @@ export default async function FileArrayHandler(files: File[] | FileList) {
     }
     const composeAsyncArray: FileConversion[] = [];
     const spinner = createSpinner();
-    for (let item of files) {
-        if ((!item.type.startsWith("image") && item.type !== "application/pdf") || item.type === "image/svg+xml") continue;
+    conversionType.set("fileopen");
+    for (let x = 0; x < files.length; x++) {
+        conversionProgress.set(x);
+        const item = files[x];
+        if ((!item.type.startsWith("image") && item.type !== "application/pdf" && !item.name.endsWith(".heic") && !item.name.endsWith(".heif")) || item.type === "image/svg+xml") continue;
         const getBlob = await ImageBlobHandler(item.name.substring(item.name.lastIndexOf(".") + 1), await item.arrayBuffer());
         if (Array.isArray(getBlob)) {
             for (let i = 0; i < getBlob.length; i++) composeAsyncArray.push({ fileName: (item.webkitRelativePath ?? "") !== "" ? `${item.webkitRelativePath.substring(0, item.webkitRelativePath.lastIndexOf("."))}-${i}${item.webkitRelativePath.substring(item.webkitRelativePath.lastIndexOf("."))}` : `${item.name.substring(0, item.name.lastIndexOf("."))}-${i}${item.name.substring(item.name.lastIndexOf("."))}`, scaleType: "percentage", blob: getBlob[i] });
@@ -29,5 +32,6 @@ export default async function FileArrayHandler(files: File[] | FileList) {
         ...composeAsyncArray
     ]);
     composeAsyncArray.length > 0 && conversionStatus.set(1);
+    conversionProgress.set(undefined);
     spinner.remove();
 }
