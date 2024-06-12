@@ -4,8 +4,10 @@
 
 <div class="dialogContainer">
     <div class="fullDialog">
-        <slot></slot>
-        <br /><br />
-        <button on:click={close}>Close dialog</button>
+        <div class="fullDialogPadding">
+            <slot></slot>
+            <br /><br />
+            <button on:click={close}>Close dialog</button>
+        </div>
     </div>
 </div>

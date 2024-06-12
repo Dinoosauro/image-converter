@@ -175,7 +175,6 @@ button:active {
   left: 15vw;
   width: 70vw;
   border-radius: 12px;
-  padding: 20px 15px;
   transition: opacity 0.2s ease-in-out;
 }
 
@@ -265,4 +264,8 @@ a {
   left: calc(50vw - 50px);
   width: 100px;
   height: 100px;
+}
+
+.fullDialogPadding {
+  padding: 20px 15px;
 }

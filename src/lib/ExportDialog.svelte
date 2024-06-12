@@ -39,33 +39,37 @@
 </script>
 
 <div bind:this={div} class="topDialog" style="display: none; opacity: 0">
-    <label>The download has started!</label>
-    <a style="margin-left: 10px;" href={$outputLink}>Force download</a>
-    <label
-        style="margin-left: 10px; text-decoration: underline"
-        class="pointer"
-        on:click={() => closePopup()}>Close alert</label
-    >
+    <div class="fullDialogPadding">
+        <label>The download has started!</label>
+        <a style="margin-left: 10px;" href={$outputLink}>Force download</a>
+        <label
+            style="margin-left: 10px; text-decoration: underline"
+            class="pointer"
+            on:click={() => closePopup()}>Close alert</label
+        >
+    </div>
 </div>
 <div
     bind:this={bottomDiv}
     class="topDialog"
     style="top: auto; bottom: 10vh; display: none; opacity: 0"
 >
-    <div class="flex hcenter">
-        <div class="spinner" style="margin-right: 10px"></div>
-        <label
-            >{$conversionType === "fileopen"
-                ? "Reading file"
-                : "Converting image"}
-            {$conversionProgress !== undefined
-                ? $conversionProgress + 1
-                : "operation completed"}</label
-        >
-        <label
-            style="margin-left: 10px; text-decoration: underline"
-            class="pointer"
-            on:click={() => closePopup(true)}>Close alert</label
-        >
+    <div class="fullDialogPadding">
+        <div class="flex hcenter">
+            <div class="spinner" style="margin-right: 10px"></div>
+            <label
+                >{$conversionType === "fileopen"
+                    ? "Reading file"
+                    : "Converting image"}
+                {$conversionProgress !== undefined
+                    ? $conversionProgress + 1
+                    : "operation completed"}</label
+            >
+            <label
+                style="margin-left: 10px; text-decoration: underline"
+                class="pointer"
+                on:click={() => closePopup(true)}>Close alert</label
+            >
+        </div>
     </div>
 </div>
