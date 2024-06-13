@@ -18,6 +18,9 @@
   import Privacy from "./lib/Privacy.svelte";
   import Licenses from "./lib/Licenses.svelte";
   import CheckNativeHeicSupport from "./Scripts/CheckNativeHeicSupport";
+  /**
+   * If set to `1`, the Settings dialog will be shown
+   */
   $: dialogShow = 0;
   const fileSystemAPIId = `Checkbox-${Math.random().toString().substring(2)}`;
   afterUpdate(() => {
@@ -42,6 +45,11 @@
       accent: "#3ab4a4",
     },
   };
+  /**
+   * Update a style property
+   * @param prop the key to update
+   * @param val its new value
+   */
   function applyNewTheme(prop: string, val: string) {
     document.body.style.setProperty(`--${prop}`, val);
     localStorage.setItem(
@@ -51,21 +59,33 @@
         [prop]: val,
       }),
     );
-    prop === "accent" && updateAccentImage();
+    prop === "accent" && updateAccentImage(); // If the accent color is changed, update also the icons
   }
   const restoreTheme = JSON.parse(
     localStorage.getItem("ImageConverter-Theme") ?? "{}",
   );
   for (let key in restoreTheme) applyNewTheme(key, restoreTheme[key]);
+  /**
+   * Change the theme from dark to light (or viceversa)
+   * @param e the Event of the checkbox change, or the booelan that indicates if the dark theme is checked (true) or not (false).
+   */
   function changeTheme(e: Event | boolean) {
     if (e instanceof Event)
       e = (e.target as HTMLSelectElement).value === "dark";
     for (let item in theme.dark)
       applyNewTheme(item, theme[e ? "dark" : "light"][item as "background"]);
   }
+  /**
+   * The event triggered when the user changes a specific input[type=color] for the theme
+   * @param e the Event
+   * @param prop the property to edit
+   */
   function colorPickerApply(e: Event, prop: string) {
     applyNewTheme(prop, (e.target as HTMLSelectElement).value);
   }
+  /**
+   * Hide the settings dialog, or, in general, every dialog
+   */
   function hideDialog() {
     const select = document.querySelector(
       ".dialogContainer",
@@ -75,18 +95,31 @@
       setTimeout(() => (dialogShow = 0), 210);
     }
   }
+  /**
+   * Set in the LocalStorage if the checkbox is checked or not
+   * @param e the Event
+   * @param isHeic if this is the `Use native heic library` checkbox (if not provided -> `Don't use File System API` checkbox)
+   */
   function fileSystemAPIChange(e: Event, isHeic?: true) {
     localStorage.setItem(
       isHeic ? "ImageConverter-HeicLibrary" : "ImageConverter-FSApi",
       (e.target as HTMLInputElement).checked ? "a" : "b",
     );
   }
+  /**
+   * Set in the LocalStorage the new PDF Scale
+   * @param e the Event
+   */
   function PDFScaleChange(e: Event) {
     localStorage.setItem(
       "ImageConverter-PDFScale",
       (e.target as HTMLInputElement).value,
     );
   }
+  /**
+   * Handle file drop in the Document
+   * @param e
+   */
   function drop(e: DragEvent) {
     e.preventDefault();
     const files: File[] = [];

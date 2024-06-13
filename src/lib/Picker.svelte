@@ -8,41 +8,52 @@
     } from "../Scripts/Storage";
     import TitleIcon from "./Styles/TitleIcon.svelte";
     import FileArrayHandler from "../Scripts/FileArrayHandler";
+    import CheckNativeHeicSupport from "../Scripts/CheckNativeHeicSupport";
+    import CheckSupportedFile from "../Scripts/CheckSupportedFile";
     const file = FilePicker;
     $: folderPickerName = file.webkitdirectory ? "a folder" : "files";
     const inputId = `CheckBox-${Math.random().toString().substring(2)}`;
+    /**
+     * Get content from the clipboard, and convert them. Usually, the content provided is `image/png`
+     */
     async function readFromClipboard() {
-        if (
-            (
-                await navigator.permissions.query({
-                    name: "clipboard-read",
-                })
-            ).state === "denied"
-        ) {
-            alert("Clipboard access is required to use this feature.");
-            return;
+        try {
+            if (
+                (
+                    await navigator.permissions.query({
+                        name: "clipboard-read",
+                    })
+                ).state === "denied"
+            ) {
+                alert("Clipboard access is required to use this feature.");
+                return;
+            }
+        } catch (ex) {
+            console.warn(ex);
         }
         const content = await navigator.clipboard.read();
-        const tempArray: FileConversion[] = [];
+        const tempArray: File[] = [];
         for (let item of content) {
             for (let type of item.types) {
-                if (type.startsWith("image/")) {
-                    tempArray.push({
-                        fileName: `ClipboardItem-${Date.now()}-${Math.random().toString().substring(2)}.png`,
-                        scaleType: "percentage",
-                        blob: await item.getType(type),
-                    });
+                if (!CheckSupportedFile({ type, name: `.temp` })) {
+                    tempArray.push(
+                        new File(
+                            [await item.getType(type)],
+                            `ClipboardItem-${Date.now()}-${Math.random().toString().substring(2)}.${type.substring(type.indexOf("/") + 1)}`,
+                            {
+                                type,
+                            },
+                        ),
+                    );
                     break;
                 }
             }
         }
-        if (tempArray.length !== 0) {
-            convertFiles.update((prev) => [...prev, ...tempArray]);
-            conversionStatus.set(1);
-        }
+        FileArrayHandler(tempArray);
     }
     onMount(() => {
         if ("launchQueue" in window) {
+            // Check if the user has opened files from the system's file picker
             (window.launchQueue as any).setConsumer(
                 async (launchParams: any) => {
                     const arr = [];

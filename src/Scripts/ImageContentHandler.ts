@@ -1,5 +1,13 @@
 import type { AssetsType } from "./Storage";
+/**
+ * The Map that ties the image to the asset it refers to. This is done so that the image can be updated when the user changes the accent color value
+ */
 const imageMap = new Map<HTMLImageElement, AssetsType>([]);
+/**
+ * Get the SVG path of an icon
+ * @param key the asset to fetch
+ * @returns the string of the SVG of that image
+ */
 export function ImageRes(key: AssetsType) {
     const color = getComputedStyle(document.body).getPropertyValue("--accent");
     return {
@@ -17,9 +25,17 @@ export function ImageRes(key: AssetsType) {
         documentpdf: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="${color}" d="M7.503 13.002a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 1 0v-.5H8.5a1.5 1.5 0 0 0 0-3h-.997Zm.997 2h-.497v-1H8.5a.5.5 0 1 1 0 1Zm6.498-1.5a.5.5 0 0 1 .5-.5h1.505a.5.5 0 1 1 0 1h-1.006l-.001 1.002h1.007a.5.5 0 0 1 0 1h-1.007l.002.497a.5.5 0 0 1-1 .002l-.003-.998v-.002l.003-2.002Zm-3.498-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h.498a2 2 0 0 0 0-4H11.5Zm.5 3v-2a1 1 0 0 1 0 2ZM20 20v-1.164c.591-.281 1-.884 1-1.582V12.75c0-.698-.409-1.3-1-1.582v-1.34a2 2 0 0 0-.586-1.414l-5.829-5.828a.491.491 0 0 0-.049-.04.63.63 0 0 1-.036-.03 2.072 2.072 0 0 0-.219-.18.652.652 0 0 0-.08-.044l-.048-.024-.05-.029c-.054-.031-.109-.063-.166-.087a1.977 1.977 0 0 0-.624-.138c-.02-.001-.04-.004-.059-.007A.605.605 0 0 0 12.172 2H6a2 2 0 0 0-2 2v7.168c-.591.281-1 .884-1 1.582v4.504c0 .698.409 1.3 1 1.582V20a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2Zm-2 .5H6a.5.5 0 0 1-.5-.5v-.996h13V20a.5.5 0 0 1-.5.5Zm.5-10.5v1h-13V4a.5.5 0 0 1 .5-.5h6V8a2 2 0 0 0 2 2h4.5Zm-1.122-1.5H14a.5.5 0 0 1-.5-.5V4.621L17.378 8.5Zm-12.628 4h14.5a.25.25 0 0 1 .25.25v4.504a.25.25 0 0 1-.25.25H4.75a.25.25 0 0 1-.25-.25V12.75a.25.25 0 0 1 .25-.25Z"/></svg>`
     }[key]
 }
+/**
+ * Link an image to a specific asset, so that it can be re-rendered when the user changes the accent color
+ * @param img the Image element that needs to be updated
+ * @param str the asset of that image element
+ */
 export function setAccentImage(img: HTMLImageElement, str: AssetsType) {
     imageMap.set(img, str);
 }
+/**
+ * Re-render all the images with the new accent color
+ */
 export function updateAccentImage() {
     for (let [img, str] of imageMap) img.src = URL.createObjectURL(new Blob([ImageRes(str)], { type: "image/svg+xml" }))
 }

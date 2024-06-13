@@ -6,6 +6,10 @@
     } from "../../Scripts/Storage";
     import TitleIcon from "../Styles/TitleIcon.svelte";
     const inputId = `Input-${Math.random().toString().substring(2)}`;
+    /**
+     * Wait 350ms and check if the value is the same before re-rendering the image with the new size
+     * @param e the Event
+     */
     function refreshEvent(e: Event) {
         const time = (e.target as HTMLInputElement).value;
         setTimeout(() => {

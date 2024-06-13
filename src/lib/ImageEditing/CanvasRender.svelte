@@ -13,13 +13,27 @@
     import FileSystemHandle from "../../Scripts/FileSystemHandle";
     import TitleIcon from "../Styles/TitleIcon.svelte";
     import createSpinner from "../../Scripts/CreateSpinner";
+    import Dialog from "../Styles/Dialog.svelte";
+    // When the user changes the value of the "Save as zip" checkbox
     let exportAsZip = localStorage.getItem("ImageConverter-SaveZip") === "a";
     $: {
         localStorage.setItem("ImageConverter-SaveZip", exportAsZip ? "a" : "b");
     }
+    /**
+     * The ID of the "Save as a zip file" checkbox, so that it can be tied with the label
+     */
     let zipId = `Checkbox-${Math.random().toString().substring(2)}`;
+    /**
+     * The canvas where the image is rendered
+     */
     let canvas: HTMLCanvasElement;
+    /**
+     * The image that is being currenty edited
+     */
     const img = new Image();
+    /**
+     * Replace the `img` variable by getting a new Image URL from the selected Blob
+     */
     async function updateView() {
         return new Promise<void>(async (resolve, reject) => {
             img.src = URL.createObjectURL(
@@ -33,6 +47,9 @@
             document.title = `[${$currentImageEditing + 1}/${$convertFiles.length}] ${$convertFiles[$currentImageEditing].fileName} | image-converter`;
         });
     }
+    /**
+     * Get the output [width, height] of the image, according to user's preference
+     */
     function getProportions() {
         switch ($convertFiles[$currentImageEditing].scaleType) {
             case "percentage":
@@ -66,6 +83,9 @@
                 return [img.width, img.height];
         }
     }
+    /**
+     * Re-render the canvas, applying both the new width/height and the custom filters
+     */
     function reRender() {
         return new Promise<void>((resolve, reject) => {
             if (canvas === undefined) {
@@ -74,12 +94,15 @@
             }
             const ctx = canvas.getContext("2d");
             if (ctx) {
-                const spinner = createSpinner();
+                const spinner = createSpinner(); // Show the loading spinner
                 setTimeout(() => {
+                    // Add it with a timeout so that the spinner is added to the DOM and rendered
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    const proportions = getProportions();
-                    canvas.width = proportions[0];
-                    canvas.height = proportions[1];
+                    [canvas.width, canvas.height] = getProportions();
+                    /**
+                     * The string that'll contain the filters applied by the user.
+                     * In the `convertFiles` object array, each filter is stored as a key-value object. The following for loop will convert this.
+                     */
                     let outputStr = "";
                     for (let key in $convertFiles[$currentImageEditing]
                         .filters ?? {}) {
@@ -95,8 +118,12 @@
         });
     }
     onMount(() => updateView());
-    forceCanvasUpdate.subscribe(() => reRender());
-    currentImageEditing.subscribe(() => updateView());
+    forceCanvasUpdate.subscribe(() => reRender()); // Re-render the canvas when is needed (usually when filters are changed)
+    currentImageEditing.subscribe(() => updateView()); // Change the image source when the user clicks on another image
+    /**
+     * Get the output file name of the exported image
+     * @param position the index of the `convertFiles` array to extract
+     */
     function formatFileName(position: number) {
         return `${$convertFiles[position].fileName.substring(
             0,
@@ -111,6 +138,11 @@
                   )
         }`;
     }
+    /**
+     * Get, and save the current canvas as a Blob
+     * @param handle A Handle from the File System API. If not provided, the file will be downloaded normally
+     * @param beforeName The name to add before the file. This is currently used when a FileSystemDirectoryHandle is provided, so that a new folder can be created with all the exported images
+     */
     function exportCanvas(
         handle?: FileSystemFileHandle | FileSystemDirectoryHandle,
         beforeName?: string,
@@ -137,19 +169,29 @@
         showText: string;
         updateVal: (keyof FileConversion)[];
     }
+    /**
+     * An array of the four options that can be copied from an image to all the others
+     */
     let batchConvertItems: BatchConvertObj[] = [];
+    /**
+     * An array that'll be merged on the `batchConvertItems` array, with the text to display for each category
+     */
     const batchConvertText = [
         "Image output format",
         "Width/height settings",
         "Quality settings",
         "Filter settings",
     ];
+    /**
+     * An array that contains an array of properties to copy if a checkbox is checked.
+     */
     const availableOptions: (keyof FileConversion)[][] = [
         ["mimeType"],
         ["scaleType", "scale"],
         ["quality"],
         ["filters"],
     ];
+    // Populate the new array
     for (let i = 0; i < 4; i++)
         batchConvertItems[i] = {
             id: `Checkbox-${Math.random()}`,
@@ -157,10 +199,20 @@
             showText: batchConvertText[i],
             updateVal: availableOptions[i],
         };
-    function updateBatchCheckbox(e: Event, ref: number) {
-        batchConvertItems[ref].update = (e.target as HTMLInputElement).checked;
+    /**
+     * Show the "Apply the property to all items" dialog
+     */
+    function showDialog() {
+        const select = document.querySelector(
+            ".dialogContainer",
+        ) as HTMLElement | null;
+        select && setTimeout(() => (select.style.opacity = "1"), 15);
     }
-    function applyBatchCheckbox() {
+
+    /**
+     * Apply the selected properties to all the items of the array
+     */
+    async function applyBatchCheckbox() {
         for (let i = 0; i < batchConvertItems.length; i++) {
             if (batchConvertItems[i].update)
                 for (let x = 0; x < $convertFiles.length; x++) {
@@ -170,11 +222,45 @@
                         ][option] as Blob;
                 }
         }
-        batchDialog.style.opacity = "0";
+        if (
+            scaleBlurPixel &&
+            $convertFiles[$currentImageEditing].filters?.blur
+        ) {
+            const [currentBlur, currentPixels] = [
+                +($convertFiles[$currentImageEditing].filters?.blur as string),
+                img.width * img.height,
+            ];
+            for (let i = 0; i < $convertFiles.length; i++)
+                await new Promise<void>((resolve) => {
+                    conversionType.set("blurapply"); // Change the text that'll be shown in the bottom dialog
+                    conversionProgress.set(i); // And set the number of the image that is being elaborated, so that the bottom dialog can be shown with that number.
+                    const newImg = new Image();
+                    newImg.src = URL.createObjectURL($convertFiles[i].blob);
+                    newImg.onload = () => {
+                        $convertFiles[i].filters = {
+                            ...$convertFiles[i].filters,
+                            blur: `${(currentBlur * newImg.width * newImg.height) / currentPixels}`,
+                        };
+                        resolve();
+                    };
+                    img.onerror = () => resolve();
+                });
+            conversionProgress.set(undefined); // Hide the bottom dialog
+        }
+        (
+            document.querySelector(".dialogContainer") as HTMLElement
+        ).style.opacity = "0";
         setTimeout(() => (showBatchDialog = false), 210);
     }
-    let batchDialog: HTMLDivElement;
+    /**
+     * Show the dialog that allows the user to apply the current properties to each picture
+     */
     $: showBatchDialog = false;
+    /**
+     * If enabled, the blur effect of the current image will be scaled to the (width * height) of all the other images, so that the same effect can be achieved
+     */
+    let scaleBlurPixel = false;
+    const blurScaleCheckboxId = `Checkbox-${Math.random().toString().substring(2)}`;
 </script>
 
 <div class="card">
@@ -209,14 +295,14 @@
                 } catch (ex) {
                     console.warn(ex);
                 }
-                conversionType.set("conversion");
-                conversionProgress.set($currentImageEditing);
+                conversionType.set("conversion"); // Change the text that'll be shown in the bottom dialog
+                conversionProgress.set($currentImageEditing); // And set the number of the current exported image, so that the bottom dialog can be shown with that number.
                 await exportCanvas(handle);
                 if (exportAsZip) {
                     getZip();
                     restoreZip();
                 }
-                conversionProgress.set(undefined);
+                conversionProgress.set(undefined); // Hide the bottom dialog
             }}>Export this canvas</button
         >
         <button
@@ -231,11 +317,11 @@
                 } catch (ex) {
                     console.warn(ex);
                 }
-                let addName = `ImageConverter-Operation-${Date.now()}`;
+                let addName = `ImageConverter-Operation-${Date.now()}`; // Create a new directory
                 for (let i = 0; i < $convertFiles.length; i++) {
-                    $currentImageEditing = i;
-                    conversionType.set("conversion");
-                    conversionProgress.set($currentImageEditing);
+                    $currentImageEditing = i; // Change the image that'll be rendeerd
+                    conversionType.set("conversion"); // Change the text that'll be shown in the bottom dialog
+                    conversionProgress.set($currentImageEditing); // And set the number of the current exported image, so that the bottom dialog can be shown with that number.
                     try {
                         await updateView();
                         await exportCanvas(
@@ -250,22 +336,15 @@
                     getZip();
                     restoreZip();
                 }
-                conversionProgress.set(undefined);
+                conversionProgress.set(undefined); // Hide the bottom dialog
             }}>Export all images</button
         >
     </div>
     <button
         style="background-color: var(--second); margin-top: 5px;"
         on:click={() => {
+            showDialog();
             showBatchDialog = true;
-            // TODO: Move this on afterMount, this solution is horrible
-            const interval = setInterval(() => {
-                if (!batchDialog) return;
-                batchDialog.style.opacity = "1";
-                for (let i = 0; i < batchConvertItems.length; i++)
-                    batchConvertItems[i].update = false;
-                clearInterval(interval);
-            }, 15);
         }}>Apply current preferences to every image</button
     >
     <br /><br />
@@ -281,31 +360,40 @@
 </div>
 
 {#if showBatchDialog}
-    <div class="dialogContainer" bind:this={batchDialog}>
-        <div class="fullDialog">
-            <TitleIcon asset="image">Batch conversion settings:</TitleIcon>
-            <p>
-                From each slider below, choose which properties of this image
-                should be applied to every image currently uploaded. Note that,
-                if you upload more images, you'll need to apply these properties
-                again.
-            </p>
-            <br />
-            {#each batchConvertItems as text, i}
-                <div class="second card" style="margin-bottom: 10px;">
-                    <div class="checkContainer">
-                        <input
-                            type="checkbox"
-                            id={text.id}
-                            on:change={(e) => updateBatchCheckbox(e, i)}
-                        /><label for={text.id}>{text.showText}</label>
-                    </div>
+    <Dialog close={applyBatchCheckbox} customCloseDialogName="Apply">
+        <TitleIcon asset="image">Batch conversion settings:</TitleIcon>
+        <p>
+            From each slider below, choose which properties of this image should
+            be applied to every image currently uploaded. Note that, if you
+            upload more images, you'll need to apply these properties again.
+        </p>
+        <br />
+        {#each batchConvertItems as text, i}
+            <div class="second card" style="margin-bottom: 10px;">
+                <div class="checkContainer">
+                    <input
+                        type="checkbox"
+                        id={text.id}
+                        bind:checked={text.update}
+                    /><label for={text.id}>{text.showText}</label>
                 </div>
-            {/each}
-            <br /><br />
-            <button on:click={() => applyBatchCheckbox()}>Apply</button>
+            </div>
+        {/each}
+        <div class="second card">
+            <div class="checkContainer">
+                <input
+                    style="background-color: var(--second)"
+                    type="checkbox"
+                    id={blurScaleCheckboxId}
+                    bind:checked={scaleBlurPixel}
+                /><label for={blurScaleCheckboxId}
+                    >(Copy and) scale the blur value according to the pixels of
+                    the image</label
+                >
+            </div>
         </div>
-    </div>
+        <br /><br />
+    </Dialog>
 {/if}
 
 <style>

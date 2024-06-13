@@ -1,11 +1,26 @@
 <script lang="ts">
+    /**
+     * The top div, used for forcing a download
+     */
     let div: HTMLDivElement;
+    /**
+     * The bottom div, used to inform the user of the current operation status
+     */
     let bottomDiv: HTMLDivElement;
     import {
         outputLink,
         conversionProgress,
         conversionType,
     } from "../Scripts/Storage";
+    /**
+     * A number that changes when a value of the top/bottom dialog is edited.
+     * This is done since `opacity = 0` is applied immediately, while `opacity = 1` is applied after 15ms. This means that, if an operation completes before 15ms, the alert would remain visible, since the timeout would set the opacity of the dialog as 1. To solve this, `opacity = 1` won't be applied if this value isn't the same of the one when the operation started.
+     */
+    let currentId = 0;
+    /**
+     * Force close the dialog, by setting the opacity to 0 and the value linked to the dialog as undefined.
+     * @param useBottomDiv hide the bottom diaog instead of the top one
+     */
     function closePopup(useBottomDiv?: boolean) {
         (useBottomDiv ? bottomDiv : div).style.opacity = "0";
         setTimeout(
@@ -30,10 +45,14 @@
     });
     conversionProgress.subscribe((val) => {
         if (!bottomDiv) return;
+        currentId++;
+        const keepId = currentId;
         if (val === undefined) closePopup(true);
         else {
             bottomDiv.style.display = "block";
-            setTimeout(() => (bottomDiv.style.opacity = "1"), 15);
+            setTimeout(() => {
+                if (keepId === currentId) bottomDiv.style.opacity = "1";
+            }, 15);
         }
     });
 </script>
@@ -60,7 +79,9 @@
             <label
                 >{$conversionType === "fileopen"
                     ? "Reading file"
-                    : "Converting image"}
+                    : $conversionType === "blurapply"
+                      ? "Calculating blur for image"
+                      : "Converting image"}
                 {$conversionProgress !== undefined
                     ? $conversionProgress + 1
                     : "operation completed"}</label

@@ -1,15 +1,21 @@
+/**
+ * Convert if necessary the image file passed
+ * @param extension the file extension
+ * @param fileBuffer the ArrayBuffer of the file
+ * @returns a Blob with the processed content as an image readable by the browser
+ */
 export default function BlobHandler(extension: string, fileBuffer: ArrayBuffer) {
     return new Promise<Blob | Blob[]>(async (resolve) => {
         const file = new Blob([fileBuffer]);
-        if (localStorage.getItem("ImageConverter-HeicLibrary") === "a" && (extension === "heic" || extension === "heif")) extension += "temp";
+        if (localStorage.getItem("ImageConverter-HeicLibrary") === "a" && (extension === "heic" || extension === "heif")) extension += "temp"; // If the file is HEIC, and the user wants to use the browser's standard decoder, add a `temp` extension at the end so that, in the following switch, the `default` block will be triggered.
         switch (extension) {
-            case "heic": case "heif": {
+            case "heic": case "heif": { // Use heic2any to get the image as a PNG
                 const heic = await import("heic2any");
                 const blob = await heic.default({ blob: file, multiple: true });
                 resolve(blob);
                 break;
             }
-            case "tiff": case "tif": {
+            case "tiff": case "tif": { // Use UTIF.js to convert the image first to a canvas, later to a PNG
                 const utif = (await import("utif")).default;
                 const decode = utif.decode(fileBuffer);
                 let outputBlobArr: Blob[] = [];
@@ -31,7 +37,7 @@ export default function BlobHandler(extension: string, fileBuffer: ArrayBuffer) 
                 resolve(outputBlobArr);
                 break;
             }
-            case "pdf": {
+            case "pdf": { // Use PDF.JS to convert the PDF first in a canvas, later to a Blob
                 const pdfjs = (await import("pdfjs-dist"));
                 // @ts-ignore
                 await import("pdfjs-dist/build/pdf.worker.mjs");
@@ -56,7 +62,7 @@ export default function BlobHandler(extension: string, fileBuffer: ArrayBuffer) 
                 resolve(outputBlobArr);
                 break;
             }
-            default:
+            default: // Simply return the Blob
                 resolve(file);
                 break;
         }

@@ -6,10 +6,15 @@
         forceCanvasUpdate,
     } from "../../Scripts/Storage";
     import TitleIcon from "../Styles/TitleIcon.svelte";
+    /**
+     * Get the filter applied to the current image
+     * @param type the filter value to look
+     */
     function getFilter(type: string) {
         const filter = $convertFiles[$currentImageEditing].filters;
         return filter ? filter[type as "blur"] : undefined;
     }
+    // Import the filter polyfill if the browser doesn't support native filtering
     document.createElement("canvas").getContext("2d")?.filter === undefined &&
         import("context-filter-polyfill");
 </script>

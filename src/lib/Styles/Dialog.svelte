@@ -1,13 +1,20 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+    let mainDiv: HTMLDivElement;
     export let close;
+    export let customCloseDialogName = "Close dialog";
+    onMount(() => {
+        setTimeout(() => (mainDiv.style.opacity = "1"), 25);
+    });
 </script>
 
-<div class="dialogContainer">
+<div bind:this={mainDiv} class="dialogContainer">
     <div class="fullDialog">
         <div class="fullDialogPadding">
             <slot></slot>
             <br /><br />
-            <button on:click={close}>Close dialog</button>
+            {#if close}<button on:click={close}>{customCloseDialogName}</button>
+            {/if}
         </div>
     </div>
 </div>
