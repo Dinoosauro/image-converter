@@ -125,7 +125,6 @@
     onMount(() => {
         updateView();
         window.onmessage = (msg) => {
-            console.log(msg);
             if (
                 msg.origin === window.location.origin &&
                 msg.data.state === userState
@@ -361,7 +360,11 @@
                     })
                 ).status === 200
             )
-                TikTokProgress.set(2); // Successful
+                TikTokProgress.set(2);
+            else
+                alert(
+                    "An error occurred while sending the post request to TikTok. Make sure that Deno Deploy is correctly set up.",
+                );
             conversionProgress.set(undefined);
         }
     });

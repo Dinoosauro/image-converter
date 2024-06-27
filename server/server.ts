@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
         case "auth": { // Start the authentication process using OAuth
             const state = new URLSearchParams(req.url.substring(req.url.indexOf("?") + 1)).get("state");
             if (!state) return autoResponse({ body: "Missing fields", status: 40 })
-            return autoResponse({ body: `<!DOCTYPE html><body><script>window.location.href = "https://www.tiktok.com/v2/auth/authorize?client_key=${Deno.env.get("clientKey")}&redirect_uri=${encodeURIComponent(Deno.env.get("sourceUrl") + "/oauth.html")}&state=${encodeURIComponent(state)}&response_type=code&scope=${encodeURIComponent("video.publish,video.upload,user.info.basic,user.info.basic")}"</script></body>`, type: "text/html" })
+            return autoResponse({ body: `<!DOCTYPE html><body><script>window.location.href = "https://www.tiktok.com/v2/auth/authorize?client_key=${Deno.env.get("clientKey")}&redirect_uri=${encodeURIComponent(Deno.env.get("oauthLocation"))}&state=${encodeURIComponent(state)}&response_type=code&scope=${encodeURIComponent("video.publish,video.upload,user.info.basic,user.info.basic")}"</script></body>`, type: "text/html" })
         }
         case "post": { // Send the request to post the content to TikTok servers
             if (req.method !== "POST") return autoResponse({ body: "Endpoint available only with POST request.", status: 405 });
@@ -133,7 +133,7 @@ Deno.serve(async (req) => {
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
                     method: "POST",
-                    body: `client_key=${Deno.env.get("clientKey")}&client_secret=${Deno.env.get("clientSecret")}&code=${json.code}&grant_type=authorization_code&redirect_uri=${encodeURIComponent(Deno.env.get("sourceUrl") + "/oauth.html")}`
+                    body: `client_key=${Deno.env.get("clientKey")}&client_secret=${Deno.env.get("clientSecret")}&code=${json.code}&grant_type=authorization_code&redirect_uri=${encodeURIComponent(Deno.env.get("oauthLocation"))}`
                 });
                 const tokenJson = await tokenRequest.json();
                 if (tokenRequest.status === 200) {
