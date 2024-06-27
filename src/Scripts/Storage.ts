@@ -9,7 +9,7 @@ export interface FileConversion {
     quality?: number,
     mimeType?: string
 }
-export type AssetsType = "settings" | "documentadd" | "resizeimage" | "imagesparkle" | "image" | "color" | "folder" | "paragraph" | "apps" | "imgmultiple" | "shield" | "documentpdf";
+export type AssetsType = "settings" | "documentadd" | "resizeimage" | "imagesparkle" | "image" | "color" | "folder" | "paragraph" | "apps" | "imgmultiple" | "shield" | "documentpdf" | "musicnote";
 import { writable } from "svelte/store";
 
 /**
@@ -55,3 +55,21 @@ export let conversionProgress = writable<number | undefined>();
  * The type of string that'll be shown in the bottom dialog
  */
 export let conversionType = writable<"fileopen" | "conversion" | "blurapply">("fileopen");
+/**
+ * The ID given by the server for uploading TikTok images
+ */
+export let TikTokCode = writable<string>("")
+/**
+ * The URL where the user will upload the images for the TikTok API
+ */
+export let TikTokURL = writable<string>(localStorage.getItem("ImageConverter-TikTokURL") ?? "");
+/**
+ * The progress of the TikTok operation:
+ * -1 = Card isn't shown
+ * 0 = User is choosing title and caption
+ * 1 = Uploading images
+ * 2 = Done
+ */
+export let TikTokProgress = writable<number>(-1);
+export let TikTokCaption = writable<string>("");
+export let TikTokTitle = writable<string>("");

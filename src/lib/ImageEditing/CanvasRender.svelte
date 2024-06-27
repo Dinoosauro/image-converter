@@ -7,6 +7,11 @@
         currentImageEditing,
         forceCanvasUpdate,
         measureMap,
+        TikTokCaption,
+        TikTokCode,
+        TikTokProgress,
+        TikTokTitle,
+        TikTokURL,
         type FileConversion,
     } from "../../Scripts/Storage";
     import { ExportFile, getZip, restoreZip } from "../../Scripts/ExportFile";
@@ -117,7 +122,19 @@
             } else reject();
         });
     }
-    onMount(() => updateView());
+    onMount(() => {
+        updateView();
+        window.onmessage = (msg) => {
+            console.log(msg);
+            if (
+                msg.origin === window.location.origin &&
+                msg.data.state === userState
+            ) {
+                TikTokProgress.set(0);
+                tikTokAuthorization = msg.data.code;
+            }
+        };
+    });
     forceCanvasUpdate.subscribe(() => reRender()); // Re-render the canvas when is needed (usually when filters are changed)
     currentImageEditing.subscribe(() => updateView()); // Change the image source when the user clicks on another image
     /**
@@ -261,6 +278,93 @@
      */
     let scaleBlurPixel = false;
     const blurScaleCheckboxId = `Checkbox-${Math.random().toString().substring(2)}`;
+    /**
+     * The string that contains the TikTok code used for authentication
+     */
+    let tikTokAuthorization = "";
+    /**
+     * The State that'll be used for TikTok API
+     */
+    let userState = "";
+    TikTokProgress.subscribe(async (value) => {
+        value === 0 &&
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: "smooth",
+            });
+        if (value === 1) {
+            // Time to send the requests to the server
+            const storeThumbnail = $currentImageEditing;
+            for (let i = 0; i < $convertFiles.length; i++) {
+                $currentImageEditing = i; // Change the image that'll be rendeerd
+                conversionProgress.set($currentImageEditing); // And set the number of the current exported image, so that the bottom dialog can be shown with that number.
+                await updateView();
+                const resizedCanvas = document.createElement("canvas");
+                // Currently, TikTok supports image uploads to their API up to 1080p.
+                resizedCanvas.width =
+                    canvas.width > canvas.height
+                        ? (canvas.width * 1080) / canvas.height
+                        : 1080;
+                resizedCanvas.height =
+                    canvas.height > canvas.width
+                        ? (canvas.height * 1080) / canvas.width
+                        : 1080;
+                resizedCanvas
+                    .getContext("2d")
+                    ?.drawImage(
+                        canvas,
+                        0,
+                        0,
+                        resizedCanvas.width,
+                        resizedCanvas.height,
+                    );
+                const arr = await new Promise<Uint8Array>((resolve) => {
+                    // Render the canvas to a Blob, and then get the Uint8Array that'll be sent
+                    resizedCanvas.toBlob(
+                        async (blob) => {
+                            if (blob) {
+                                resolve(
+                                    new Uint8Array(
+                                        await new Response(blob).arrayBuffer(),
+                                    ),
+                                );
+                            }
+                        },
+                        document
+                            .createElement("canvas")
+                            .toDataURL("image/webp")
+                            .startsWith("data:image/webp")
+                            ? "image/webp"
+                            : "image/jpeg",
+                        0.8,
+                    );
+                });
+                await fetch(
+                    `${$TikTokURL}upload?id=${$TikTokCode}&position=${i + 1}`, // Upload the image to the server
+                    {
+                        method: "POST",
+                        body: arr,
+                    },
+                );
+            }
+            if (
+                (
+                    await fetch(`${$TikTokURL}post`, {
+                        method: "POST",
+                        body: JSON.stringify({
+                            id: $TikTokCode,
+                            description: $TikTokCaption,
+                            code: tikTokAuthorization,
+                            thumbnail: storeThumbnail,
+                            title: $TikTokTitle,
+                        }),
+                    })
+                ).status === 200
+            )
+                TikTokProgress.set(2); // Successful
+            conversionProgress.set(undefined);
+        }
+    });
 </script>
 
 <div class="card">
@@ -340,13 +444,24 @@
             }}>Export all images</button
         >
     </div>
-    <button
-        style="background-color: var(--second); margin-top: 5px;"
-        on:click={() => {
-            showDialog();
-            showBatchDialog = true;
-        }}>Apply current preferences to every image</button
-    >
+    <div class="flex" style="gap: 10px">
+        <button
+            style="background-color: var(--second); margin-top: 5px;"
+            on:click={() => {
+                showDialog();
+                showBatchDialog = true;
+            }}>Apply current preferences to every image</button
+        >
+        {#if !!$TikTokURL}
+            <button
+                style="background-color: var(--second); margin-top: 5px;"
+                on:click={() => {
+                    userState = Math.random().toString(36).substring(2);
+                    window.open(`${$TikTokURL}auth?state=${userState}`);
+                }}>Save on TikTok</button
+            >
+        {/if}
+    </div>
     <br /><br />
     <div class="checkContainer">
         <input type="checkbox" id={zipId} bind:checked={exportAsZip} /><label

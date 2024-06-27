@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+
+<body>
+    <h1>There has been an error in the request :(</h1>
+    <script>
+        const search = new URLSearchParams(window.location.search);
+        const [code, state] = [search.get("code"), search.get("state")];
+        if (code && state) {
+            window.opener.postMessage({ code, state }, window.location.origin);
+            close();
+        }
+    </script>
+</body>

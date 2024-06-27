@@ -62,7 +62,8 @@ input[type=checkbox]::before {
 }
 
 select,
-input:not([type=range]):not([type=checkbox]) {
+input:not([type=range]):not([type=checkbox]),
+textarea {
   background-color: var(--struct);
   padding: 10px;
   border-radius: 8px;
@@ -91,7 +92,8 @@ input[type=checkbox]:checked {
 .fullWidth,
 button,
 input[type=range],
-select {
+select,
+textarea {
   width: 100%;
   width: -moz-available;
   width: -webkit-fill-available;
@@ -117,6 +119,10 @@ input:hover,
 select:hover,
 .spanLink:hover {
   cursor: pointer;
+}
+
+.event {
+  pointer-events: visible;
 }
 
 button:hover {
@@ -181,6 +187,7 @@ button:active {
 .topDialog {
   backdrop-filter: blur(8px) brightness(30%);
   -webkit-backdrop-filter: blur(8px) brightness(30%);
+  pointer-events: none;
 }
 
 .fullDialog {

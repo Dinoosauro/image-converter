@@ -1,7 +1,11 @@
 <script lang="ts">
   import Header from "./lib/Header.svelte";
   import "./app.css";
-  import { conversionStatus } from "./Scripts/Storage";
+  import {
+    conversionStatus,
+    TikTokProgress,
+    TikTokURL,
+  } from "./Scripts/Storage";
   import Picker from "./lib/Picker.svelte";
   import Resize from "./lib/ImageEditing/Resize.svelte";
   import Filter from "./lib/ImageEditing/Filter.svelte";
@@ -18,6 +22,7 @@
   import Privacy from "./lib/Privacy.svelte";
   import Licenses from "./lib/Licenses.svelte";
   import CheckNativeHeicSupport from "./Scripts/CheckNativeHeicSupport";
+  import TikTokIntegration from "./lib/Extra/TikTokIntegration.svelte";
   /**
    * If set to `1`, the Settings dialog will be shown
    */
@@ -110,9 +115,9 @@
    * Set in the LocalStorage the new PDF Scale
    * @param e the Event
    */
-  function PDFScaleChange(e: Event) {
+  function PDFScaleChange(e: Event, key?: string) {
     localStorage.setItem(
-      "ImageConverter-PDFScale",
+      key ?? "ImageConverter-PDFScale",
       (e.target as HTMLInputElement).value,
     );
   }
@@ -156,15 +161,18 @@
 {:else if $conversionStatus === 1}
   <ImagePicker></ImagePicker><br />
   <div class="flex multiPage">
-    <Resize></Resize>
     <div>
       <Filter></Filter>
     </div>
     <CanvasRender></CanvasRender>
   </div>
   <br /><br />
+  {#if $TikTokProgress !== -1}
+    <TikTokIntegration></TikTokIntegration>
+  {/if}
 {/if}
 <ExportDialog></ExportDialog>
+
 <br /><br /><br />
 <span
   style="position: absolute; right: 15px; top: 15px; transform: scale(0.9)"
@@ -251,6 +259,25 @@
           >
         </div>
       {/await}
+    </div>
+    <br /><br />
+    <div class="second card">
+      <TitleIcon asset="musicnote" isH3={true}>TikTok integration</TitleIcon>
+      <p>
+        Write the link for the server that'll be used for posting images on
+        TikTok (add the / after the URL). Leave this field blank to disable this
+        function
+      </p>
+      <input
+        class="fullWidth"
+        type="text"
+        bind:value={$TikTokURL}
+        on:input={(e) => PDFScaleChange(e, "ImageConverter-TikTokURL")}
+      /><br /><br />
+      <i
+        >TikTok is a trademark of ByteDance, that is in no way affiliated with
+        image-renderer</i
+      >
     </div>
     <br /><br />
     <Licenses></Licenses>

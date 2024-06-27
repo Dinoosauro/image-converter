@@ -63,7 +63,7 @@
         <a style="margin-left: 10px;" href={$outputLink}>Force download</a>
         <label
             style="margin-left: 10px; text-decoration: underline"
-            class="pointer"
+            class="pointer event"
             on:click={() => closePopup()}>Close alert</label
         >
     </div>
@@ -88,7 +88,7 @@
             >
             <label
                 style="margin-left: 10px; text-decoration: underline"
-                class="pointer"
+                class="pointer event"
                 on:click={() => closePopup(true)}>Close alert</label
             >
         </div>
