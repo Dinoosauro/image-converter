@@ -161,6 +161,7 @@
 {:else if $conversionStatus === 1}
   <ImagePicker></ImagePicker><br />
   <div class="flex multiPage">
+    <Resize></Resize>
     <div>
       <Filter></Filter>
     </div>
