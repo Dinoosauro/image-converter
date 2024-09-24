@@ -36,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: npm i
       - name: Build website
-        run: npx vite build --base=image-converter
+        run: npx vite build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
