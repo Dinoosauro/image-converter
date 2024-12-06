@@ -63,9 +63,22 @@ In the settings, you can:
   Chromium-based browsers)
 - See the open source licenses
 
-## Progressive Web App You can install image-converter as a Progressive Web App.
-With this, you'll be able to use it offline, and you'll be also be able to open
-files from the system's file explorer.
+## Installation
+
+### Progressive Web App
+
+You can install image-converter as a Progressive Web App. With this, you'll be
+able to use it offline, and you'll be also be able to open files from the
+system's file explorer.
+
+## Docker image
+
+You can also use image-converter from a Docker image: to do this, run the
+following command:
+
+```
+docker run -p 8080:8080 ghcr.io/dinoosauro/image-converter:latest
+```
 
 ## Privacy
 
